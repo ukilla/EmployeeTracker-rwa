@@ -4,6 +4,7 @@ import { UserEntity } from '../models/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../models/user.class';
 import { Observable, from } from 'rxjs';
+const bcrypt = require('bcrypt');
 
 @Injectable()
 export class UserService {
@@ -13,17 +14,23 @@ export class UserService {
   ) {}
 
   async createUser(user: User): Promise<User> {
-    const { username } = user;
+    const { username, password } = user;
     const existingUser = await this.userRepository.findOne({
       where: { username },
     });
     if (existingUser) {
       throw new ConflictException('Username already exists');
     }
+    const hashedPwd = await bcrypt.hash(password, 10);
+    user.password=hashedPwd;
     return this.userRepository.save(user);
   }
 
-  async findUsers(): Promise<User[]>{
+  async findUsers(): Promise<User[]> {
     return this.userRepository.find();
+  }
+
+  findUser(username: string) {
+    return this.userRepository.findOne({ where: { username } });
   }
 }
