@@ -42,7 +42,7 @@ export class UserService {
       .createQueryBuilder('user')
       .where('user.username=:name', { name: loginDto.username })
       .getOne();
-    const jwt = await this.jwtService.signAsync({ id: user.id });
+    const jwt = await this.jwtService.signAsync({ id: user.id,username:user.username });
     return jwt;
   }
 }

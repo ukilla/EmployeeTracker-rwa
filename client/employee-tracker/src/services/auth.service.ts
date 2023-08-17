@@ -14,7 +14,17 @@ export class AuthService {
 
   login(username: string, password: string): Observable<User> {
     const loginData = { username, password };
-    return this.http.post<User>(`${this.apiUrl}/user/login`, loginData);
+    return this.http.post<User>(`${this.apiUrl}/user/login`, loginData, {
+      withCredentials: true,
+    });
+  }
+
+  logout() {
+    return this.http.post(
+      'http://localhost:3000/api/user/logout',
+      {},
+      { withCredentials: true }
+    );
   }
 
   register(
@@ -25,5 +35,15 @@ export class AuthService {
   ): Observable<User> {
     const registerData = { username, password, firstName, lastName };
     return this.http.post<User>(`${this.apiUrl}/user`, registerData);
+  }
+
+  getUserByCookie() {
+    const user = this.http.get(
+      'http://localhost:3000/api/user/getUserByCookie',
+      {
+        withCredentials: true,
+      }
+    );
+    return user;
   }
 }

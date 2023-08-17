@@ -37,3 +37,19 @@
 .navigation a:hover {
   background-color: #555;
 }
+
+.navigation a, .logout-button {
+  display: inline-block;
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.navigation a:hover, .logout-button:hover {
+  background-color: #0056b3;
+}

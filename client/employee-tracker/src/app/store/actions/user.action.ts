@@ -14,6 +14,8 @@ export const logInUserFailure = createAction(
   props<{ error: string }>(),
 );
 
+export const logOutUser = createAction('[User] Log Out User');
+
 export const registerUser = createAction(
   '[User] Register user',
   props<{

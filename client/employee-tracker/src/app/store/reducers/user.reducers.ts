@@ -19,10 +19,15 @@ export const reducers = createReducer(
     isLoading: false,
     isLoggedIn: true,
   })),
-  on(UserActions.logInUserFailure, (state,action) => ({
+  on(UserActions.logInUserFailure, (state, action) => ({
     ...state,
     isLoading: false,
     isLoggedIn: false,
-    error:action.error
+    error: action.error,
   })),
+  on(UserActions.logOutUser, (state) => ({
+    ...state,
+    isLoggedIn: false,
+    isLoading: false,
+  }))
 );

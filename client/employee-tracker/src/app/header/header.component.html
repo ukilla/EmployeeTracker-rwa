@@ -3,9 +3,17 @@
     <h1>Zaposleni Info</h1>
   </div>
   <nav class="navigation">
-    <ul>
-      <li><a routerLink="/login">Uloguj se</a></li>
-      <li><a routerLink="/register">Registracija</a></li>
+    <ul *ngIf="!user; else loggedInUser">
+      <li><a routerLink="/login">Login</a></li>
+      <li><a routerLink="/register">Register</a></li>
     </ul>
+    <ng-template #loggedInUser>
+      <ul *ngIf="user">
+        <li>Welcome, {{ user.firstName }}!</li>
+        <li>
+          <button class="logout-button" (click)="logout()">Logout</button>
+        </li>
+      </ul>
+    </ng-template>
   </nav>
 </header>
