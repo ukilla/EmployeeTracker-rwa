@@ -2,18 +2,11 @@
   <div class="logo">
     <h1>Zaposleni Info</h1>
   </div>
-  <nav class="navigation">
-    <ul *ngIf="!user; else loggedInUser">
-      <li><a routerLink="/login">Login</a></li>
-      <li><a routerLink="/register">Register</a></li>
-    </ul>
-    <ng-template #loggedInUser>
-      <ul *ngIf="user">
-        <li>Welcome, {{ user.firstName }}!</li>
-        <li>
-          <button class="logout-button" (click)="logout()">Logout</button>
-        </li>
-      </ul>
-    </ng-template>
-  </nav>
+  <div class="navigation" *ngIf="!isLoggedIn">
+    <a routerLink="/login" type="button">Login</a>
+    <a routerLink="/register" type="button">Register</a>
+  </div>
+  <div class="col-md-3 text-end" *ngIf="isLoggedIn">
+    <a routerLink="/login" type="button" class="logout-button" (click)="logout()">Logout</a>
+  </div>
 </header>

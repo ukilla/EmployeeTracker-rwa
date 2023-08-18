@@ -30,12 +30,11 @@ export class UserEffects {
       this.actions$.pipe(
         ofType(AuthActions.logInUserSuccess),
         tap(() => {
+          this.authService.getUserByCookie().subscribe((user) => {
+            localStorage.setItem('loggedUser', JSON.stringify(user));
+            localStorage.setItem('isLoggedIn', 'true');
+          });
           this.router.navigate(['/']);
-          this.authService
-            .getUserByCookie()
-            .subscribe((user) =>
-              localStorage.setItem('loggedUser', JSON.stringify(user))
-            );
         })
       ),
     { dispatch: false }
@@ -44,15 +43,40 @@ export class UserEffects {
   logOutUser$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.logOutUser),
-      mergeMap(() => {
-        localStorage.removeItem('loggedUser');
-        return this.authService.logout().pipe(
-          map(() => AuthActions.logOutUser()),
-          tap(() => {
-            this.router.navigate(['/login']);
-          })
-        );
-      })
+      switchMap(() =>
+        this.authService.logout().pipe(
+          map(() => AuthActions.logOutUserSuccess()),
+          catchError((error) => of(AuthActions.logOutUserFailure()))
+        )
+      )
+    )
+  );
+  logOutUserSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.logOutUserSuccess),
+        tap(() => {
+          localStorage.removeItem('loggedUser');
+          localStorage.removeItem('isLoggedIn');
+          this.router.navigate(['/']);
+        })
+      ),
+    { dispatch: false }
+  );
+
+  rehydrateUser$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.rehydrateUser),
+      map(() => {
+        const userData = localStorage.getItem('loggedUser');
+        if (userData) {
+          const user = JSON.parse(userData);
+          return AuthActions.logInUserSuccess({ user: user });
+        } else {
+          return AuthActions.logOutUser();
+        }
+      }),
+      catchError((error) => of(AuthActions.rehydrateUserFailure({ error })))
     )
   );
 }

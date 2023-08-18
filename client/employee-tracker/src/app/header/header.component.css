@@ -32,13 +32,15 @@
   transition: color 0.3s ease;
   padding: 8px 10px;
   border-radius: 5px;
+  margin-left: 10px;
 }
 
 .navigation a:hover {
   background-color: #555;
 }
 
-.navigation a, .logout-button {
+.navigation a,
+.logout-button {
   display: inline-block;
   padding: 8px 12px;
   background-color: #007bff;
@@ -50,6 +52,7 @@
   transition: background-color 0.3s ease;
 }
 
-.navigation a:hover, .logout-button:hover {
+.navigation a:hover,
+.logout-button:hover {
   background-color: #0056b3;
 }
