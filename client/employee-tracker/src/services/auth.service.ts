@@ -34,7 +34,8 @@ export class AuthService {
     lastName: string
   ): Observable<User> {
     const registerData = { username, password, firstName, lastName };
-    return this.http.post<User>(`${this.apiUrl}/user`, registerData);
+    console.log(registerData);
+    return this.http.post<User>(`${this.apiUrl}/user/register`, registerData);
   }
 
   getUserByCookie() {

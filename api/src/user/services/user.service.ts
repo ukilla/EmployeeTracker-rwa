@@ -17,7 +17,8 @@ export class UserService {
   ) {}
 
   async createUser(user: User): Promise<User> {
-    const { username, password } = user;
+    const { username, password,firstName,lastName } = user;
+    console.log(user);
     const existingUser = await this.userRepository.findOne({
       where: { username },
     });
@@ -42,7 +43,10 @@ export class UserService {
       .createQueryBuilder('user')
       .where('user.username=:name', { name: loginDto.username })
       .getOne();
-    const jwt = await this.jwtService.signAsync({ id: user.id,username:user.username });
+    const jwt = await this.jwtService.signAsync({
+      id: user.id,
+      username: user.username,
+    });
     return jwt;
   }
 }

@@ -35,7 +35,7 @@ export class RegisterComponent {
   onSubmit() {
     if (this.registrationForm.valid) {
       const formData = this.registrationForm.value;
-      console.log('Registration data:', formData);
+      console.log('Registration data:', formData.firstName);
       this.store.dispatch(AuthActions.registerUser({user:{username:formData.username,password:formData.password,firstName:formData.firstName,lastName:formData.lastName}}))
       this.registrationForm.reset();
     }

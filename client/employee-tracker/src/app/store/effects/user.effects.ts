@@ -79,4 +79,33 @@ export class UserEffects {
       catchError((error) => of(AuthActions.rehydrateUserFailure({ error })))
     )
   );
+
+  register$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.registerUser),
+      switchMap((action) =>
+        this.authService
+          .register(
+            action.user.username,
+            action.user.password,
+            action.user.firstName,
+            action.user.lastName
+          )
+          .pipe(
+            map((user) => AuthActions.registerUserSucess({ user })),
+            catchError((error) => of(AuthActions.registerUserFailure()))
+          )
+      )
+    )
+  );
+  registerSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.registerUserSucess),
+        tap(() => {
+          this.router.navigate(['/login']);
+        })
+      ),
+    { dispatch: false }
+  );
 }

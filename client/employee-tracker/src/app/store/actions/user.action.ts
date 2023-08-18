@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { User } from 'src/app/models/user';
+import { UserStateInterface } from 'src/app/models/user.state';
 
 export const logInUser = createAction(
   '[User] Log in user',

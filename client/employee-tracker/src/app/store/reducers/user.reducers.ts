@@ -36,8 +36,16 @@ export const reducers = createReducer(
     isLoading: false,
   })),
 
-  on(UserActions.rehydrateUser,(state)=>({
+  on(UserActions.rehydrateUser, (state) => ({
     ...state,
-  }))
+  })),
 
+  on(UserActions.registerUser, (state) => ({ ...state, isLoading: true })),
+  on(UserActions.registerUserSucess, (state, { user }) =>
+    adapter.addOne(user, { ...state, isLoading: false })
+  ),
+  on(UserActions.registerUserFailure, (state) => ({
+    ...state,
+    isLoading: false,
+  }))
 );
