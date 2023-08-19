@@ -44,7 +44,17 @@
     </div>
     <button type="submit">Dodaj</button>
   </form>
-  <div *ngFor="let employee of employees">
+</div>
+<div class="search-container">
+  <input
+    type="text"
+    placeholder="Unesi ime zaposljenog"
+    [(ngModel)]="searchTerm"
+    (input)="searchEmployees()"
+  />
+</div>
+<div class="employee-list">
+  <div *ngFor="let employee of (filteredEmployees.length > 0 ? filteredEmployees : employees)" class="employee-card">
     <app-employee
       [firstName]="employee.firstName"
       [lastName]="employee.lastName"

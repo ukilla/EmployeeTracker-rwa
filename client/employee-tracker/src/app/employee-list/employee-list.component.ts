@@ -15,6 +15,15 @@ export class EmployeeListComponent implements OnInit {
   departments: any[] = [];
   employee: any = {};
   employees: any[] = [];
+  searchTerm = '';
+  filteredEmployees: any[] = [];
+
+  searchEmployees() {
+    this.filteredEmployees = this.employees.filter((employee) => {
+      const fullName = `${employee.firstName} ${employee.lastName}`;
+      return fullName.toLowerCase().includes(this.searchTerm.toLowerCase());
+    });
+  }
 
   ngOnInit() {
     this.fetchEmployees();
