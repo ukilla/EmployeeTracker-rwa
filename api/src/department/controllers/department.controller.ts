@@ -16,7 +16,7 @@ export class DepartmentController {
     return this.departmentService.findDepartment(department.id);
   }
 
-  @Get()
+  @Get('getDepartments')
   getDepartments() {
     return this.departmentService.getDepartments();
   }

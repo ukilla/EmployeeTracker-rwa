@@ -1,0 +1,9 @@
+<div class="employee-card" *ngIf="firstName && lastName">
+  <div class="icon-container">
+    <mat-icon class="doctor-icon">account_circle</mat-icon>
+  </div>
+  <div class="info-container">
+    <div class="name">{{ firstName }} {{ lastName }}</div>
+  </div>
+  <app-calendar></app-calendar>
+</div>

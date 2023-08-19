@@ -13,6 +13,15 @@ import { HeaderComponent } from './header/header.component';
 import { UserEffects } from './store/effects/user.effects';
 import { reducers } from './store/reducers/user.reducers';
 import { HttpClientModule } from '@angular/common/http';
+import { MainComponent } from './main/main.component';
+import { EmployeeListComponent } from './employee-list/employee-list.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { EmployeeComponent } from './employee/employee.component';
+import { MatIconModule } from '@angular/material/icon';
+import { CalendarComponent } from './calendar/calendar.component';
+import { CalendarModule, DateAdapter } from 'angular-calendar';
+import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
+import { IgxCalendarModule, IgxDialogModule } from 'igniteui-angular';
 
 @NgModule({
   declarations: [
@@ -20,6 +29,10 @@ import { HttpClientModule } from '@angular/common/http';
     LoginComponent,
     RegisterComponent,
     HeaderComponent,
+    MainComponent,
+    EmployeeListComponent,
+    EmployeeComponent,
+    CalendarComponent,
   ],
   imports: [
     BrowserModule,
@@ -30,6 +43,14 @@ import { HttpClientModule } from '@angular/common/http';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    BrowserAnimationsModule,
+    MatIconModule,
+    CalendarModule.forRoot({
+      provide: DateAdapter,
+      useFactory: adapterFactory,
+    }),
+    IgxCalendarModule,
+    IgxDialogModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

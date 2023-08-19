@@ -7,7 +7,7 @@ import { Body, Post, Put, Get } from '@nestjs/common/decorators';
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
-  @Post()
+  @Post('addEmployee')
   create(@Body() employeeData: Employee) {
     return this.employeeService.createEmployee(employeeData);
   }
@@ -26,11 +26,11 @@ export class EmployeeController {
     return this.employeeService.addLeaveDate(employeeId, takenLeaveDate);
   }
 
-  @Get()
+  @Get('getEmployees')
   getEmployees() {
     return this.employeeService.getEmployees();
   }
-  
+
   @Get('byDepartment')
   getByDepartment(@Body() data) {
     const { departmentId } = data;
