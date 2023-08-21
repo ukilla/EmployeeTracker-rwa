@@ -6,6 +6,7 @@ import { Employee } from '../models/employee.class';
 import { DepartmentEntity } from 'src/department/models/department.entity';
 import { DepartmentService } from 'src/department/services/department.service';
 import { BadRequestException } from '@nestjs/common/exceptions';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class EmployeeService {
@@ -52,13 +53,47 @@ export class EmployeeService {
     return this.employeeRepository.save(employee);
   }
 
-  async addLeaveDate(employeeId: number, takenLeaveDate: Date) {
+  async addLeaveDate(employeeId: number, takenLeaveDate: Date[]) {
     const employee = await this.findEmployee(employeeId);
     if (!employee.takenLeaveDate) {
       employee.takenLeaveDate = [];
     }
-    employee.takenLeaveDate.push(takenLeaveDate);
+    employee.takenLeaveDate.push(...takenLeaveDate);
     return this.employeeRepository.save(employee);
+  }
+
+  async addVacationDate(employeeId: number, vacationDate: Date[]) {
+    const employee = await this.findEmployee(employeeId);
+    if (!employee.vacationDate) {
+      employee.vacationDate = [];
+    }
+    employee.vacationDate.push(...vacationDate);
+    return this.employeeRepository.save(employee);
+  }
+
+  async addDutyDate(employeeId: number, dutyDate: Date[]) {
+    const employee = await this.findEmployee(employeeId);
+    if (!employee.vacationDate) {
+      employee.dutyDate = [];
+    }
+    employee.dutyDate.push(...dutyDate);
+    return this.employeeRepository.save(employee);
+  }
+
+  async getDutyDate(employeeId): Promise<Date[]> {
+    const employee = await this.findEmployee(employeeId);
+    if (employee.dutyDate) {
+      return employee.dutyDate;
+    }
+    return null;
+  }
+
+  async getDepartmentName(employeeId: number) {
+    const employee = await this.findEmployee(employeeId);
+    const department = await this.departmentService.findDepartment(
+      employee.department.id,
+    );
+    return department;
   }
 
   async getEmployees() {

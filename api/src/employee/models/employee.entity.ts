@@ -12,16 +12,21 @@ export class EmployeeEntity {
   @Column()
   lastName: string;
 
-  @Column({type:'simple-array',nullable: true})
+  @Column({ type: 'simple-array', nullable: true })
   overtimeDate: Date[] | null;
 
-  @Column({type:'simple-array',nullable: true})
+  @Column({ type: 'simple-array', nullable: true })
+  dutyDate: Date[] | null;
+
+  @Column({ type: 'simple-array', nullable: true })
+  vacationDate: Date[] | null;
+
+  @Column({ type: 'simple-array', nullable: true })
   takenLeaveDate: Date[] | null;
 
-  @Column({type: 'int',nullable: true})
+  @Column({ type: 'int', nullable: true })
   overtimeHours: number | null;
 
-  @ManyToOne(() => DepartmentEntity, department => department.employees)
+  @ManyToOne(() => DepartmentEntity, (department) => department.employees)
   department: DepartmentEntity;
-
 }

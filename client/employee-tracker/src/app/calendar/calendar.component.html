@@ -1,26 +1,6 @@
-<article class="sample-column calendar-wrapper">
-  <igx-calendar
-    #calendar
-    [weekStart]="1"
-    selection="multi"
-    (selected)="selectPTOdays($event)"
-  >
-  </igx-calendar>
-  <igx-dialog
-    #alert
-    title="Request Time Off"
-    leftButtonLabel="OK"
-    (leftButtonSelect)="alert.close()"
-  >
-  </igx-dialog>
-  <div class="button-container">
-    <button igxButton="raised" (click)="submitPTOdays()">Slobodan dan</button>
-    <button
-      igxButton="raised"
-      class="button-secondary"
-      (click)="submitPTOdays()"
-    >
-      Prekovremeni rad
-    </button>
-  </div>
-</article>
+<ejs-schedule
+  height="500px"
+  width="1000px"
+  [currentView]="setView"
+  [eventSettings]="eventSettings"
+></ejs-schedule>

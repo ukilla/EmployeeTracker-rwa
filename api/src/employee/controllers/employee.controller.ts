@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { EmployeeService } from '../services/employee.service';
 import { Employee } from '../models/employee.class';
-import { Body, Post, Put, Get } from '@nestjs/common/decorators';
+import { Body, Post, Put, Get, Query } from '@nestjs/common/decorators';
 
 @Controller('employee')
 export class EmployeeController {
@@ -26,6 +26,18 @@ export class EmployeeController {
     return this.employeeService.addLeaveDate(employeeId, takenLeaveDate);
   }
 
+  @Put('addDutyDate')
+  addDutyDate(@Body() data) {
+    const { employeeId, dutyDate } = data;
+    return this.employeeService.addDutyDate(employeeId, dutyDate);
+  }
+
+  @Put('addVacationDate')
+  addVacationDate(@Body() data) {
+    const { employeeId, vacationDate } = data;
+    return this.employeeService.addVacationDate(employeeId, vacationDate);
+  }
+
   @Get('getEmployees')
   getEmployees() {
     return this.employeeService.getEmployees();
@@ -35,5 +47,16 @@ export class EmployeeController {
   getByDepartment(@Body() data) {
     const { departmentId } = data;
     return this.employeeService.employeesFromDepartment(departmentId);
+  }
+
+  @Get('departmentName')
+  getDepartmentName(@Body() data) {
+    const { employeeId } = data;
+    return this.employeeService.getDepartmentName(employeeId);
+  }
+
+  @Get('dutyDate')
+  getDutyDate(@Query('employeeId') employeeId: number) {
+    return this.employeeService.getDutyDate(employeeId);
   }
 }

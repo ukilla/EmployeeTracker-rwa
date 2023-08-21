@@ -1,40 +1,57 @@
-import { Component, OnInit, Input, ViewChild, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  ViewChild,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { CalendarEvent } from 'angular-calendar';
 import { Employee } from '../models/employee';
-import { DateRangeType, IgxCalendarComponent, IgxDialogComponent } from 'igniteui-angular';
+import {
+  DateRangeDescriptor,
+  DateRangeType,
+  IgxCalendarComponent,
+  IgxDialogComponent,
+} from 'igniteui-angular';
+import { DateService } from 'src/services/date.service';
+import { View } from '@syncfusion/ej2-angular-schedule';
 
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.css'],
 })
-export class CalendarComponent implements AfterViewInit {
-  @ViewChild('calendar', { static: true }) public calendar!: IgxCalendarComponent;
-  @ViewChild('alert', { static: true }) public dialog!: IgxDialogComponent;
-  public range = [];
+export class CalendarComponent implements OnInit {
+  @Input() dutyDates: Date[] = [];
+  @Input() vacationDates: Date[] = [];
+  @Input() overtimeDates: Date[] = [];
+  @Input() takenLeaveDates: Date[] = [];
+  @Input() overtimeHours: number = 0;
 
-  ngAfterViewInit(): void {
-    // Now dialog is guaranteed to be initialized
-    this.dialog.message = 'Initial message';
-  }
+  public today = new Date(Date.now());
 
-  public selectPTOdays(dates: Date | Date[]) {
-      //this.range = dates as Date[];
-  }
+  public setView: View = 'Month';
 
-  public submitPTOdays() {
-      this.calendar.specialDates =
-          [{ type: DateRangeType.Specific, dateRange: this.range }];
+  public eventSettings: any = {
+    dataSource: [],
+  };
 
-      this.range.forEach((item) => {
-          this.calendar.selectDate(item);
-      });
+  constructor(
+    private dateService: DateService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
-      if (this.range.length === 0) {
-          this.dialog.message = 'Select dates from the Calendar first.';
-      } else {
-          this.dialog.message = 'PTO days submitted.';
-      }
-      this.dialog.open();
+  ngOnInit(): void {
+    if (this.dutyDates) {
+      console.log(this.dutyDates);
+      const events = this.dutyDates.map((date) => ({
+        id: 'event_' + date,
+        subject: 'Dezurstvo',
+        startTime: new Date(date),
+        endTime: new Date(date),
+      }));
+      this.eventSettings.dataSource = events;
+    }
   }
 }

@@ -19,9 +19,24 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EmployeeComponent } from './employee/employee.component';
 import { MatIconModule } from '@angular/material/icon';
 import { CalendarComponent } from './calendar/calendar.component';
-import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { IgxCalendarModule, IgxDialogModule } from 'igniteui-angular';
+import {
+  CalendarModule,
+  DatePickerModule,
+  TimePickerModule,
+  DateRangePickerModule,
+  DateTimePickerModule,
+} from '@syncfusion/ej2-angular-calendars';
+import {
+  ScheduleModule,
+  RecurrenceEditorModule,
+  DayService,
+  WeekService,
+  WorkWeekService,
+  MonthService,
+  MonthAgendaService,
+} from '@syncfusion/ej2-angular-schedule';
 
 @NgModule({
   declarations: [
@@ -45,14 +60,23 @@ import { IgxCalendarModule, IgxDialogModule } from 'igniteui-angular';
     HttpClientModule,
     BrowserAnimationsModule,
     MatIconModule,
-    CalendarModule.forRoot({
-      provide: DateAdapter,
-      useFactory: adapterFactory,
-    }),
     IgxCalendarModule,
     IgxDialogModule,
+    CalendarModule,
+    DatePickerModule,
+    TimePickerModule,
+    DateRangePickerModule,
+    DateTimePickerModule,
+    ScheduleModule,
+    RecurrenceEditorModule,
   ],
-  providers: [],
+  providers: [
+    DayService,
+    WeekService,
+    WorkWeekService,
+    MonthService,
+    MonthAgendaService,
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
