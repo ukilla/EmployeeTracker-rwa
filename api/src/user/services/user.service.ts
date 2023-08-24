@@ -28,8 +28,10 @@ export class UserService {
     if (passwordAdmin != process.env.PASSWORD_ADMIN) {
       throw new ConflictException('Wrong admin password!');
     }
+    const hashedAdminPwd = await bcrypt.hash(password, 8);
     const hashedPwd = await bcrypt.hash(password, 10);
     user.password = hashedPwd;
+    user.passwordAdmin = hashedAdminPwd;
     return this.userRepository.save(user);
   }
 
