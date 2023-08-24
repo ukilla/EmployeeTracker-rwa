@@ -27,6 +27,7 @@ export const registerUser = createAction(
       lastName: string;
       username: string;
       password: string;
+      passwordAdmin:string;
     };
   }>()
 );

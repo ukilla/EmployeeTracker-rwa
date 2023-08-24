@@ -17,13 +17,16 @@ export class UserService {
   ) {}
 
   async createUser(user: User): Promise<User> {
-    const { username, password,firstName,lastName } = user;
-    console.log(user);
+    const { username, password, firstName, lastName, passwordAdmin } = user;
     const existingUser = await this.userRepository.findOne({
       where: { username },
     });
     if (existingUser) {
       throw new ConflictException('Username already exists');
+    }
+
+    if (passwordAdmin != process.env.PASSWORD_ADMIN) {
+      throw new ConflictException('Wrong admin password!');
     }
     const hashedPwd = await bcrypt.hash(password, 10);
     user.password = hashedPwd;

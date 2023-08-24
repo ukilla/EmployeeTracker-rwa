@@ -3,4 +3,7 @@
   width="1000px"
   [currentView]="setView"
   [eventSettings]="eventSettings"
+  [selectedDate]="setDate"
+  (popupOpen)="onPopupOpen($event)"
+  (actionComplete)="onActionComplete($event)"
 ></ejs-schedule>

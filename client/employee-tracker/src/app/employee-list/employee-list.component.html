@@ -56,10 +56,11 @@
 <div class="employee-list">
   <div *ngFor="let employee of (filteredEmployees.length > 0 ? filteredEmployees : employees)" class="employee-card">
     <app-employee
+      [employeeId]="employee.id"
       [firstName]="employee.firstName"
       [lastName]="employee.lastName"
       [overtimeDates]="employee.overtimeDate"
-      [takenLeaveDates]="employee.takenLeaveDates"
+      [takenLeaveDates]="employee.takenLeaveDate"
       [dutyDates]="employee.dutyDate"
       [vacationDates]="employee.vacationDate"
     ></app-employee>

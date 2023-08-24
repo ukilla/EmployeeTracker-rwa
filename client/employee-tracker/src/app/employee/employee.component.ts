@@ -7,14 +7,20 @@ import { EmployeeService } from 'src/services/employee.service';
   styleUrls: ['./employee.component.css'],
 })
 export class EmployeeComponent implements OnInit {
-  @Input() firstName: string="";
-  @Input() lastName: string="";
-  @Input() overtimeDates: Date[]=[];
-  @Input() takenLeaveDates: Date[]=[];
-  @Input() vacationDates: Date[]=[];
-  @Input() dutyDates: Date[]=[];
-  employee:any;
-  ngOnInit(){
-    this.employee={firstName: this.firstName,lastName: this.lastName,overtimeDate:this.overtimeDates,takenLeaveDates:this.takenLeaveDates}
+  @Input() employeeId: number = -1;
+  @Input() firstName: string = '';
+  @Input() lastName: string = '';
+  @Input() overtimeDates: Date[] = [];
+  @Input() takenLeaveDates: Date[] = [];
+  @Input() vacationDates: Date[] = [];
+  @Input() dutyDates: Date[] = [];
+  employee: any;
+  ngOnInit() {
+    this.employee = {
+      firstName: this.firstName,
+      lastName: this.lastName,
+      overtimeDate: this.overtimeDates,
+      takenLeaveDates: this.takenLeaveDates,
+    };
   }
 }

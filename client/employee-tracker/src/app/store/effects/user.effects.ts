@@ -89,7 +89,8 @@ export class UserEffects {
             action.user.username,
             action.user.password,
             action.user.firstName,
-            action.user.lastName
+            action.user.lastName,
+            action.user.passwordAdmin
           )
           .pipe(
             map((user) => AuthActions.registerUserSucess({ user })),

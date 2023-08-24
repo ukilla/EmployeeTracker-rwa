@@ -4,4 +4,9 @@ export class User {
   lastName: string;
   username: string;
   password: string;
+  passwordAdmin: string | null;
+
+  constructor(data?: Partial<User>) {
+    Object.assign(this, data);
+  }
 }

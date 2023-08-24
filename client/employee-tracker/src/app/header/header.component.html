@@ -10,7 +10,7 @@
     <a routerLink="/employees" type="button" class="logout-button">Svi zaposleni</a>
   </div>
   <div class="" *ngIf="isLoggedIn">
-    <a routerLink="/login" type="button" class="logout-button" >Odeljenja</a>
+    <a routerLink="/departments" type="button" class="logout-button" >Odeljenja</a>
   </div>
   <div class="col-md-3 text-end" *ngIf="isLoggedIn">
     <a routerLink="/login" type="button" class="logout-button" (click)="logout()">Logout</a>

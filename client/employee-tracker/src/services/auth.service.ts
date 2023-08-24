@@ -31,9 +31,10 @@ export class AuthService {
     username: string,
     password: string,
     firstName: string,
-    lastName: string
+    lastName: string,
+    passwordAdmin: string
   ): Observable<User> {
-    const registerData = { username, password, firstName, lastName };
+    const registerData = { username, password, firstName, lastName, passwordAdmin };
     console.log(registerData);
     return this.http.post<User>(`${this.apiUrl}/user/register`, registerData);
   }

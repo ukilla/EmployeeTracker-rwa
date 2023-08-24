@@ -1,0 +1,20 @@
+<div
+  class="department-tab"
+  [class.active]="active"
+  (click)="toggleEmployeesVisibility()"
+>
+  {{ department.name }}
+</div>
+<div *ngIf="employeesVisible" class="employee-list">
+  <div *ngFor="let employee of department.employees" class="employee-card">
+    <app-employee
+      [employeeId]="employee.id"
+      [firstName]="employee.firstName"
+      [lastName]="employee.lastName"
+      [overtimeDates]="employee.overtimeDate"
+      [takenLeaveDates]="employee.takenLeaveDate"
+      [dutyDates]="employee.dutyDate"
+      [vacationDates]="employee.vacationDate"
+    ></app-employee>
+  </div>
+</div>

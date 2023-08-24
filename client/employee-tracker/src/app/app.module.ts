@@ -37,6 +37,8 @@ import {
   MonthService,
   MonthAgendaService,
 } from '@syncfusion/ej2-angular-schedule';
+import { DepartmentsComponent } from './departments/departments.component';
+import { DepartmentTabComponent } from './department-tab/department-tab.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +50,8 @@ import {
     EmployeeListComponent,
     EmployeeComponent,
     CalendarComponent,
+    DepartmentsComponent,
+    DepartmentTabComponent,
   ],
   imports: [
     BrowserModule,

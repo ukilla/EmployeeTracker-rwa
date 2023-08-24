@@ -10,6 +10,7 @@
   },
   "private": true,
   "dependencies": {
+    "-": "^0.0.1",
     "@angular/animations": "^16.2.0",
     "@angular/cdk": "^16.2.1",
     "@angular/common": "^16.2.0",
@@ -32,6 +33,7 @@
     "date-fns": "^2.29.3",
     "fflate": "^0.7.3",
     "fullcalendar": "^6.1.8",
+    "g": "^2.0.1",
     "hammerjs": "^2.0.8",
     "igniteui-angular": "^16.0.18",
     "minireset.css": "~0.0.4",

@@ -11,7 +11,7 @@ export class EmployeeController {
   create(@Body() employeeData: Employee) {
     return this.employeeService.createEmployee(employeeData);
   }
-  @Put('overtime')
+  @Put('addOvertime')
   addOvertime(@Body() data) {
     const { overtimeDate, overtimeHours, employeeId } = data;
     return this.employeeService.addOvertime(
@@ -20,7 +20,7 @@ export class EmployeeController {
       overtimeHours,
     );
   }
-  @Put('takenLeave')
+  @Put('addTakenLeave')
   addTakenLeave(@Body() data) {
     const { employeeId, takenLeaveDate } = data;
     return this.employeeService.addLeaveDate(employeeId, takenLeaveDate);
@@ -29,6 +29,7 @@ export class EmployeeController {
   @Put('addDutyDate')
   addDutyDate(@Body() data) {
     const { employeeId, dutyDate } = data;
+    console.log(employeeId,dutyDate);
     return this.employeeService.addDutyDate(employeeId, dutyDate);
   }
 
@@ -43,7 +44,7 @@ export class EmployeeController {
     return this.employeeService.getEmployees();
   }
 
-  @Get('byDepartment')
+  @Put('byDepartment')
   getByDepartment(@Body() data) {
     const { departmentId } = data;
     return this.employeeService.employeesFromDepartment(departmentId);

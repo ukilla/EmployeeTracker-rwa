@@ -41,4 +41,15 @@ export class EmployeeService {
       withCredentials: true,
     });
   }
+
+  employeesFromDepartment(index: number) {
+    const data = { departmentId: index };
+    return this.http.put<Employee>(
+      `${this.apiUrl}/employee/byDepartment`,
+      data,
+      {
+        withCredentials: true,
+      }
+    );
+  }
 }

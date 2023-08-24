@@ -1,0 +1,23 @@
+.department-tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.3s, background-color 0.3s;
+  }
+  
+  .department-tab.active {
+    border-color: #007bff;
+    background-color: #f5f5f5;
+  }
+  
+  .employees-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+  }
+  
+  .employee-item {
+    padding: 5px 0;
+    border-bottom: 1px solid #ccc;
+  }
+  
