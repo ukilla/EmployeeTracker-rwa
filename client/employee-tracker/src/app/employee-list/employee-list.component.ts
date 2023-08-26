@@ -81,7 +81,6 @@ export class EmployeeListComponent implements OnInit {
     this.employeeService.getEmployees().subscribe(
       (data: any) => {
         this.employees = data;
-        console.log(data);
       },
       (error: any) => {
         console.error('Error fetching employee:', error);

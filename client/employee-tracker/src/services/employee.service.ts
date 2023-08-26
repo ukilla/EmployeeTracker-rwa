@@ -52,4 +52,15 @@ export class EmployeeService {
       }
     );
   }
+
+  deleteEmployee(employeeId: number) {
+    const data = { employeeId: employeeId };
+    return this.http.post<Employee>(
+      `${this.apiUrl}/employee/deleteEmployee`,
+      data,
+      {
+        withCredentials: true,
+      }
+    );
+  }
 }

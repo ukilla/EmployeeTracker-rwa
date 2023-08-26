@@ -17,6 +17,7 @@ export class DateService {
 
   addDutyDate(employeeId: number, dutyDate: string) {
     const data = { employeeId, dutyDate: [dutyDate] };
+    console.log(dutyDate);
     return this.http.put<EmployeeDate>(
       `${this.apiUrl}/employee/addDutyDate`,
       data,
@@ -37,11 +38,21 @@ export class DateService {
     );
   }
 
-  
   addTakenLeave(employeeId: number, takenLeave: string) {
     const data = { employeeId, takenLeaveDate: [takenLeave] };
     return this.http.put<EmployeeDate>(
       `${this.apiUrl}/employee/addTakenLeave`,
+      data,
+      {
+        withCredentials: true,
+      }
+    );
+  }
+
+  addOvertime(employeeId: number, overtimeDate: string,overtimeHours:number) {
+    const data = { employeeId, overtimeDate: [overtimeDate],overtimeHours:overtimeHours };
+    return this.http.put<EmployeeDate>(
+      `${this.apiUrl}/employee/addOvertime`,
       data,
       {
         withCredentials: true,
@@ -54,5 +65,45 @@ export class DateService {
       params: employeeData,
       withCredentials: true,
     });
+  }
+
+  deleteDutyDate(employeeId: number, dutyDateDelete: string) {
+    const data = { employeeId: employeeId, dutyDateDelete: dutyDateDelete };
+    console.log(data);
+    return this.http.put<Employee>(
+      `${this.apiUrl}/employee/deleteDutyDate`,
+      data,
+      {
+        withCredentials: true,
+      }
+    );
+  }
+
+  deleteVacationDate(employeeId: number, vacationDateDelete: string) {
+    const data = {
+      employeeId: employeeId,
+      vacationDateDelete: vacationDateDelete,
+    };
+    return this.http.put<Employee>(
+      `${this.apiUrl}/employee/deleteVacationDate`,
+      data,
+      {
+        withCredentials: true,
+      }
+    );
+  }
+
+  deleteTakenLeaveDate(employeeId: number, takenLeaveDateDelete: string) {
+    const data = {
+      employeeId: employeeId,
+      takenLeaveDateDelete: takenLeaveDateDelete,
+    };
+    return this.http.put<Employee>(
+      `${this.apiUrl}/employee/deleteTakenLeaveDate`,
+      data,
+      {
+        withCredentials: true,
+      }
+    );
   }
 }

@@ -42,3 +42,12 @@
     font-size: 24px;
     color: white;
   }
+
+  .close-button {
+    background-color: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: red;
+    cursor: pointer;
+    margin-bottom: 480px;
+  }

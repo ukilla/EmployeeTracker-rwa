@@ -52,9 +52,8 @@ export class CalendarComponent implements OnInit {
     if (args.requestType === 'eventCreated') {
       const { Subject, StartTime } = args.data?.at(0);
       const startTime: string = StartTime.toString();
-      if (Subject == 'Dezurstvo') {
+      if (Subject.toLowerCase().includes('dezurstvo')) {
         const dutyDateString = this.parseDateStringToISO8601(startTime);
-        console.log(`${dutyDateString}`);
         this.dateService.addDutyDate(this.employeeId, dutyDateString).subscribe(
           (response) => {
             console.log('API response:', response);
@@ -63,7 +62,7 @@ export class CalendarComponent implements OnInit {
             console.error('API error:', error);
           }
         );
-      } else if (Subject == 'Godisnji odmor') {
+      } else if (Subject.toLowerCase().includes('godisnji odmor')) {
         const vacationDateString = this.parseDateStringToISO8601(startTime);
         this.dateService
           .addVacationDate(this.employeeId, vacationDateString)
@@ -75,7 +74,7 @@ export class CalendarComponent implements OnInit {
               console.error('API error:', error);
             }
           );
-      } else if (Subject == 'Slobodan dan') {
+      } else if (Subject.toLowerCase().includes('slobodan dan')) {
         const takenLeaveString = this.parseDateStringToISO8601(startTime);
         this.dateService
           .addTakenLeave(this.employeeId, takenLeaveString)
@@ -88,14 +87,34 @@ export class CalendarComponent implements OnInit {
             }
           );
       }
+      else if (Subject.toLowerCase().includes('prekovremeni rad')) {
+        const overtimeDate = this.parseDateStringToISO8601(startTime);
+        const overtimeHours = parseInt(args.data?.at(0).Location,10);
+        console.log(overtimeHours);
+        this.dateService
+          .addOvertime(this.employeeId, overtimeDate,overtimeHours)
+          .subscribe(
+            (response) => {
+              console.log('API response:', response);
+            },
+            (error) => {
+              console.error('API error:', error);
+            }
+          );
+      } 
     }
+  }
+
+  removeTimeFromDate(dateString: string): string {
+    const modifiedDateString = dateString.split('T')[0] + 'T00:00:00.000Z';
+    return modifiedDateString;
   }
 
   parseDateStringToISO8601(dateString: string): string {
     const parts = dateString.split(' ');
 
     if (parts.length < 6) {
-      return ''; // Invalid format
+      return '';
     }
 
     const day = parts[2];
@@ -143,10 +162,52 @@ export class CalendarComponent implements OnInit {
 
   onActionBegin(args: ActionEventArgs): void {
     if (args.requestType === 'eventCreate') {
-      //const inputElement = args.element.querySelector('input[type="number"]');
-      //const customNumber = inputElement ? parseInt(inputElement.value, 10) : 0;
-      // Now you can pass the customNumber to your function
-      // this.dateService.addEventWithCustomNumber(args.data, customNumber);
+      
+    }
+
+    if (args.requestType === 'eventRemove') {
+      const { Subject, StartTime, EndTime } = args.data?.at(0);
+      const startTime: string = StartTime.toString();
+      if (Subject == 'Dezurstvo') {
+        const dutyDateDeleteString = this.parseDateStringToISO8601(startTime);
+        const dutyDateDelete = this.removeTimeFromDate(dutyDateDeleteString);
+        this.dateService
+          .deleteDutyDate(this.employeeId, dutyDateDelete)
+          .subscribe(
+            (response) => {
+              console.log('API response:', response);
+            },
+            (error) => {
+              console.error('API error:', error);
+            }
+          );
+      } else if (Subject == 'Godisnji odmor') {
+        const vacationDateString = this.parseDateStringToISO8601(startTime);
+        const vacationDateDelete = this.removeTimeFromDate(vacationDateString);
+        this.dateService
+          .deleteVacationDate(this.employeeId, vacationDateDelete)
+          .subscribe(
+            (response) => {
+              console.log('API response:', response);
+            },
+            (error) => {
+              console.error('API error:', error);
+            }
+          );
+      } else if (Subject == 'Slobodan dan') {
+        const takenLeaveString = this.parseDateStringToISO8601(startTime);
+        const takenLeaveDateDelete = this.removeTimeFromDate(takenLeaveString);
+        this.dateService
+          .deleteTakenLeaveDate(this.employeeId, takenLeaveDateDelete)
+          .subscribe(
+            (response) => {
+              console.log('API response:', response);
+            },
+            (error) => {
+              console.error('API error:', error);
+            }
+          );
+      }
     }
   }
 

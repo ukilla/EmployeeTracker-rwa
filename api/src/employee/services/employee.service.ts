@@ -5,7 +5,10 @@ import { Repository } from 'typeorm';
 import { Employee } from '../models/employee.class';
 import { DepartmentEntity } from 'src/department/models/department.entity';
 import { DepartmentService } from 'src/department/services/department.service';
-import { BadRequestException } from '@nestjs/common/exceptions';
+import {
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common/exceptions';
 import { Observable } from 'rxjs';
 
 @Injectable()
@@ -73,7 +76,7 @@ export class EmployeeService {
 
   async addDutyDate(employeeId: number, dutyDate: Date[]) {
     const employee = await this.findEmployee(employeeId);
-    if (!employee.vacationDate) {
+    if (!employee.dutyDate) {
       employee.dutyDate = [];
     }
     employee.dutyDate.push(...dutyDate);
@@ -105,5 +108,42 @@ export class EmployeeService {
       .createQueryBuilder('employee')
       .where('employee.departmentId = :departmentId', { departmentId })
       .getMany();
+  }
+
+  async deleteDutyDate(employeeId, dutyDateDelete) {
+    const employee = await this.findEmployee(employeeId);
+    const indexToDelete = employee.dutyDate.indexOf(dutyDateDelete);
+
+    if (indexToDelete !== -1) {
+      employee.dutyDate.splice(indexToDelete, 1);
+    }
+    return this.employeeRepository.save(employee);
+  }
+
+  async deleteTakenLeaveDate(employeeId, takenLeaveDateDelete) {
+    const employee = await this.findEmployee(employeeId);
+    const indexToDelete = employee.takenLeaveDate.indexOf(takenLeaveDateDelete);
+
+    if (indexToDelete !== -1) {
+      employee.takenLeaveDate.splice(indexToDelete, 1);
+    }
+    return this.employeeRepository.save(employee);
+  }
+
+  async deleteVacationDate(employeeId, vacationDateDelete) {
+    const employee = await this.findEmployee(employeeId);
+    const indexToDelete = employee.vacationDate.indexOf(vacationDateDelete);
+
+    if (indexToDelete !== -1) {
+      employee.vacationDate.splice(indexToDelete, 1);
+    }
+    return this.employeeRepository.save(employee);
+  }
+
+  async deleteEmployee(employeeId) {
+    const result = await this.employeeRepository.delete(employeeId);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Employee with ID ${employeeId} not found`);
+    }
   }
 }

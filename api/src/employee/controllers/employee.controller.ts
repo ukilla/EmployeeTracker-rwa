@@ -11,6 +11,13 @@ export class EmployeeController {
   create(@Body() employeeData: Employee) {
     return this.employeeService.createEmployee(employeeData);
   }
+
+  @Post('deleteEmployee')
+  deleteEmployee(@Body() data) {
+    const { employeeId } = data;
+    return this.employeeService.deleteEmployee(employeeId);
+  }
+
   @Put('addOvertime')
   addOvertime(@Body() data) {
     const { overtimeDate, overtimeHours, employeeId } = data;
@@ -29,7 +36,7 @@ export class EmployeeController {
   @Put('addDutyDate')
   addDutyDate(@Body() data) {
     const { employeeId, dutyDate } = data;
-    console.log(employeeId,dutyDate);
+    console.log(employeeId, dutyDate);
     return this.employeeService.addDutyDate(employeeId, dutyDate);
   }
 
@@ -59,5 +66,29 @@ export class EmployeeController {
   @Get('dutyDate')
   getDutyDate(@Query('employeeId') employeeId: number) {
     return this.employeeService.getDutyDate(employeeId);
+  }
+
+  @Put('deleteDutyDate')
+  deleteDutyDate(@Body() data) {
+    const { employeeId, dutyDateDelete } = data;
+    return this.employeeService.deleteDutyDate(employeeId, dutyDateDelete);
+  }
+
+  @Put('deleteTakenLeaveDate')
+  deleteTakenLeaveDate(@Body() data) {
+    const { employeeId, takenLeaveDateDelete } = data;
+    return this.employeeService.deleteTakenLeaveDate(
+      employeeId,
+      takenLeaveDateDelete,
+    );
+  }
+
+  @Put('deleteVacationDate')
+  deleteVacationDate(@Body() data) {
+    const { employeeId, vacationDateDelete } = data;
+    return this.employeeService.deleteVacationDate(
+      employeeId,
+      vacationDateDelete,
+    );
   }
 }

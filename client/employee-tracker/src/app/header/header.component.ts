@@ -27,7 +27,6 @@ export class HeaderComponent {
     this.store.pipe(select(selectUserFeature)).subscribe((userState) => {
       this.isLoggedIn = userState.isLoggedIn;
       this.authenticated = userState.isLoggedIn;
-      console.log(this.isLoggedIn);
     });
   }
 

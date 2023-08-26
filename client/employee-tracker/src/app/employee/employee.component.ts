@@ -7,6 +7,7 @@ import { EmployeeService } from 'src/services/employee.service';
   styleUrls: ['./employee.component.css'],
 })
 export class EmployeeComponent implements OnInit {
+  constructor(private employeeService: EmployeeService) {}
   @Input() employeeId: number = -1;
   @Input() firstName: string = '';
   @Input() lastName: string = '';
@@ -14,6 +15,8 @@ export class EmployeeComponent implements OnInit {
   @Input() takenLeaveDates: Date[] = [];
   @Input() vacationDates: Date[] = [];
   @Input() dutyDates: Date[] = [];
+  @Input() overtimeHours: number = 0;
+  overtimeDateCount: number = 0;
   employee: any;
   ngOnInit() {
     this.employee = {
@@ -22,5 +25,19 @@ export class EmployeeComponent implements OnInit {
       overtimeDate: this.overtimeDates,
       takenLeaveDates: this.takenLeaveDates,
     };
+    this.overtimeDateCount = this.overtimeDates?.length;
+  }
+
+  onDeleteButtonClick(): void {
+    this.employeeService
+          .deleteEmployee(this.employeeId)
+          .subscribe(
+            (response) => {
+              console.log('API response:', response);
+            },
+            (error) => {
+              console.error('API error:', error);
+            }
+          );
   }
 }

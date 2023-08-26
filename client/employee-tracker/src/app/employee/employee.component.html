@@ -4,6 +4,8 @@
   </div>
   <div class="info-container">
     <div class="name">{{ firstName }} {{ lastName }}</div>
+    <div class="overtimeHours">Broj prekovremenih sati: {{overtimeHours}} </div>
+    <div class="overtimeHours">Broj prekovremenih dana: {{overtimeDateCount}} </div>
   </div>
   <app-calendar
     [overtimeDates]="this.overtimeDates"
@@ -12,4 +14,5 @@
     [vacationDates]="this.vacationDates"
     [employeeId]="this.employeeId"
   ></app-calendar>
+  <button class="close-button" (click)="onDeleteButtonClick()">&times;</button>
 </div>
