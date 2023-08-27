@@ -146,4 +146,32 @@ export class EmployeeService {
       throw new NotFoundException(`Employee with ID ${employeeId} not found`);
     }
   }
+
+  async addServiceOffering(
+    employeeId: number,
+    date: string,
+    numberOfServices: number,
+  ): Promise<void> {
+    const employee = await this.findEmployee(employeeId);
+    if (employee) {
+      employee.serviceOfferings = employee.serviceOfferings || {};
+      employee.serviceOfferings[date] = numberOfServices;
+      await this.employeeRepository.save(employee);
+    }
+  }
+
+  async getServiceOfferingsForDate(
+    employeeId: number,
+    date: string,
+  ): Promise<number | undefined> {
+    const employee = await this.findEmployee(employeeId);
+    if (
+      employee &&
+      employee.serviceOfferings &&
+      employee.serviceOfferings[date] !== undefined
+    ) {
+      return employee.serviceOfferings[date];
+    }
+    return undefined;
+  }
 }

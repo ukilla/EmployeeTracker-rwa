@@ -29,6 +29,9 @@ export class CalendarComponent implements OnInit {
   @Input() overtimeDates: Date[] = [];
   @Input() takenLeaveDates: Date[] = [];
   @Input() overtimeHours: number = 0;
+  @Input() serviceOfferings: { date: string; numberOfServices: number }[] = [];
+  selectedDate: string = '';
+  numberOfServices: string | undefined = "";
 
   private dataManager: DataManager = new DataManager({
     url: 'https://ej2services.syncfusion.com/production/web-services/api/Schedule',
@@ -86,13 +89,12 @@ export class CalendarComponent implements OnInit {
               console.error('API error:', error);
             }
           );
-      }
-      else if (Subject.toLowerCase().includes('prekovremeni rad')) {
+      } else if (Subject.toLowerCase().includes('prekovremeni rad')) {
         const overtimeDate = this.parseDateStringToISO8601(startTime);
-        const overtimeHours = parseInt(args.data?.at(0).Location,10);
+        const overtimeHours = parseInt(args.data?.at(0).Location, 10);
         console.log(overtimeHours);
         this.dateService
-          .addOvertime(this.employeeId, overtimeDate,overtimeHours)
+          .addOvertime(this.employeeId, overtimeDate, overtimeHours)
           .subscribe(
             (response) => {
               console.log('API response:', response);
@@ -101,7 +103,7 @@ export class CalendarComponent implements OnInit {
               console.error('API error:', error);
             }
           );
-      } 
+      }
     }
   }
 
@@ -110,6 +112,21 @@ export class CalendarComponent implements OnInit {
     return modifiedDateString;
   }
 
+  findNumberOfServices(dateToFind: any) {
+    for (const key in this.serviceOfferings) {
+      const checkOverlap = this.serviceOfferings[key];
+      if (checkOverlap == dateToFind) {
+        return key;
+      }
+    }
+    return undefined;
+  }
+
+  onCellClick(args: any): void {
+    const { startTime } = args;
+    this.selectedDate = this.parseDateStringToISO8601(startTime.toString());
+    this.numberOfServices=this.findNumberOfServices(this.selectedDate);
+  }
   parseDateStringToISO8601(dateString: string): string {
     const parts = dateString.split(' ');
 
@@ -162,11 +179,11 @@ export class CalendarComponent implements OnInit {
 
   onActionBegin(args: ActionEventArgs): void {
     if (args.requestType === 'eventCreate') {
-      
     }
 
     if (args.requestType === 'eventRemove') {
       const { Subject, StartTime, EndTime } = args.data?.at(0);
+      console.log(args.data?.at(0));
       const startTime: string = StartTime.toString();
       if (Subject == 'Dezurstvo') {
         const dutyDateDeleteString = this.parseDateStringToISO8601(startTime);

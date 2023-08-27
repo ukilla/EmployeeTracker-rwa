@@ -91,4 +91,20 @@ export class EmployeeController {
       vacationDateDelete,
     );
   }
+
+  @Put('addServiceOffering')
+  addServiceOffering(@Body() data) {
+    const { employeeId, numberOfServices, date } = data;
+    return this.employeeService.addServiceOffering(
+      employeeId,
+      numberOfServices,
+      date,
+    );
+  }
+
+  @Put('getServiceOfferings')
+  getServiceOfferings(@Body() data) {
+    const { employeeId, date } = data;
+    return this.employeeService.getServiceOfferingsForDate(employeeId, date);
+  }
 }

@@ -16,6 +16,7 @@ export class EmployeeComponent implements OnInit {
   @Input() vacationDates: Date[] = [];
   @Input() dutyDates: Date[] = [];
   @Input() overtimeHours: number = 0;
+  @Input() serviceOfferings: { date: string; numberOfServices: number }[] = [];
   overtimeDateCount: number = 0;
   employee: any;
   ngOnInit() {

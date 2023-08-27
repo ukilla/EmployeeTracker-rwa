@@ -27,6 +27,9 @@ export class EmployeeEntity {
   @Column({ type: 'int', nullable: true })
   overtimeHours: number | null;
 
+  @Column('json', { nullable: true })
+  serviceOfferings: { [date: string]: number } | null;
+
   @ManyToOne(() => DepartmentEntity, (department) => department.employees)
   department: DepartmentEntity;
 }

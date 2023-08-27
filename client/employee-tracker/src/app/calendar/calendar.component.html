@@ -7,4 +7,8 @@
   (popupOpen)="onPopupOpen($event)"
   (actionComplete)="onActionComplete($event)"
   (actionBegin)="onActionBegin($event)"
+  (cellClick)="onCellClick($event)"
 ></ejs-schedule>
+<div class="service-info">
+  Broj usluga za taj dan: <span>{{ numberOfServices }}</span>
+</div>

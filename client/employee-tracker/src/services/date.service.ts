@@ -49,8 +49,12 @@ export class DateService {
     );
   }
 
-  addOvertime(employeeId: number, overtimeDate: string,overtimeHours:number) {
-    const data = { employeeId, overtimeDate: [overtimeDate],overtimeHours:overtimeHours };
+  addOvertime(employeeId: number, overtimeDate: string, overtimeHours: number) {
+    const data = {
+      employeeId,
+      overtimeDate: [overtimeDate],
+      overtimeHours: overtimeHours,
+    };
     return this.http.put<EmployeeDate>(
       `${this.apiUrl}/employee/addOvertime`,
       data,
@@ -101,6 +105,35 @@ export class DateService {
     return this.http.put<Employee>(
       `${this.apiUrl}/employee/deleteTakenLeaveDate`,
       data,
+      {
+        withCredentials: true,
+      }
+    );
+  }
+
+  addServiceOfferings(
+    employeeId: number,
+    date: string,
+    numberOfServices: number
+  ) {
+    const data = { employeeId, date: date, numberOfServices: numberOfServices };
+    return this.http.put<EmployeeDate>(
+      `${this.apiUrl}/employee/addServiceOffering`,
+      data,
+      {
+        withCredentials: true,
+      }
+    );
+  }
+
+  getServiceOfferingsForDate(
+    employeeId: number,
+    date: string
+  ): Observable<Date[]> {
+    const employeeData = { employeeId, date };
+    return this.http.put<Date[]>(
+      `${this.apiUrl}/employee/getServiceOfferings`,
+      employeeData,
       {
         withCredentials: true,
       }

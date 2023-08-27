@@ -39,15 +39,19 @@
 }
 
 .doctor-icon {
-    font-size: 24px;
-    color: white;
-  }
+  font-size: 24px;
+  color: white;
+}
 
-  .close-button {
-    background-color: transparent;
-    border: none;
-    font-size: 1.5rem;
-    color: red;
-    cursor: pointer;
-    margin-bottom: 480px;
-  }
+.close-button {
+  background-color: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: red;
+  cursor: pointer;
+  margin-bottom: 480px;
+}
+
+.calendar {
+  margin-left: 15px;
+}
