@@ -83,6 +83,17 @@ export class DateService {
     );
   }
 
+  deleteServiceOffering(employeeId: number, date: string) {
+    const data = { employeeId: employeeId, date: date };
+    return this.http.post<Employee>(
+      `${this.apiUrl}/employee/deleteServiceOffering`,
+      data,
+      {
+        withCredentials: true,
+      }
+    );
+  }
+
   deleteVacationDate(employeeId: number, vacationDateDelete: string) {
     const data = {
       employeeId: employeeId,

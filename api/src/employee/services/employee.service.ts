@@ -174,4 +174,15 @@ export class EmployeeService {
     }
     return undefined;
   }
+  async deleteServiceOffering(employeeId, date) {
+    const employee = await this.findEmployee(employeeId);
+    for (const key in employee.serviceOfferings) {
+      const dateOffering = employee.serviceOfferings[key];
+      if (date == dateOffering) {
+        delete employee.serviceOfferings[key];
+        await this.employeeRepository.save(employee);
+      }
+    }
+    return this.employeeRepository.save(employee);
+  }
 }

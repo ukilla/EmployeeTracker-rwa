@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { EmployeeService } from '../services/employee.service';
 import { Employee } from '../models/employee.class';
-import { Body, Post, Put, Get, Query } from '@nestjs/common/decorators';
+import { Body, Post, Put, Get, Query, Delete } from '@nestjs/common/decorators';
 
 @Controller('employee')
 export class EmployeeController {
@@ -106,5 +106,11 @@ export class EmployeeController {
   getServiceOfferings(@Body() data) {
     const { employeeId, date } = data;
     return this.employeeService.getServiceOfferingsForDate(employeeId, date);
+  }
+
+  @Post('deleteServiceOffering')
+  deleteServiceOffering(@Body() data) {
+    const { employeeId, date } = data;
+    return this.employeeService.deleteServiceOffering(employeeId, date);
   }
 }

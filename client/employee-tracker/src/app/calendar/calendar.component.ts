@@ -31,7 +31,7 @@ export class CalendarComponent implements OnInit {
   @Input() overtimeHours: number = 0;
   @Input() serviceOfferings: { date: string; numberOfServices: number }[] = [];
   selectedDate: string = '';
-  numberOfServices: string | undefined = "";
+  numberOfServices: string | undefined = '';
 
   private dataManager: DataManager = new DataManager({
     url: 'https://ej2services.syncfusion.com/production/web-services/api/Schedule',
@@ -103,6 +103,36 @@ export class CalendarComponent implements OnInit {
               console.error('API error:', error);
             }
           );
+      } else if (Subject.toLowerCase().includes('prekovremeni rad')) {
+        const overtimeDate = this.parseDateStringToISO8601(startTime);
+        const overtimeHours = parseInt(args.data?.at(0).Location, 10);
+        console.log(overtimeHours);
+        this.dateService
+          .addOvertime(this.employeeId, overtimeDate, overtimeHours)
+          .subscribe(
+            (response) => {
+              console.log('API response:', response);
+            },
+            (error) => {
+              console.error('API error:', error);
+            }
+          );
+      } else if (
+        Subject.toLowerCase().includes('usluga') ||
+        Subject.toLowerCase().includes('usluge')
+      ) {
+        const date = this.parseDateStringToISO8601(startTime);
+        const numberOfServices = parseInt(args.data?.at(0).Location, 10);
+        this.dateService
+          .addServiceOfferings(this.employeeId, date, numberOfServices)
+          .subscribe(
+            (response) => {
+              console.log('API response:', response);
+            },
+            (error) => {
+              console.error('API error:', error);
+            }
+          );
       }
     }
   }
@@ -125,7 +155,7 @@ export class CalendarComponent implements OnInit {
   onCellClick(args: any): void {
     const { startTime } = args;
     this.selectedDate = this.parseDateStringToISO8601(startTime.toString());
-    this.numberOfServices=this.findNumberOfServices(this.selectedDate);
+    this.numberOfServices = this.findNumberOfServices(this.selectedDate);
   }
   parseDateStringToISO8601(dateString: string): string {
     const parts = dateString.split(' ');
@@ -185,6 +215,7 @@ export class CalendarComponent implements OnInit {
       const { Subject, StartTime, EndTime } = args.data?.at(0);
       console.log(args.data?.at(0));
       const startTime: string = StartTime.toString();
+      const endTime: string = EndTime.toString();
       if (Subject == 'Dezurstvo') {
         const dutyDateDeleteString = this.parseDateStringToISO8601(startTime);
         const dutyDateDelete = this.removeTimeFromDate(dutyDateDeleteString);
@@ -224,6 +255,17 @@ export class CalendarComponent implements OnInit {
               console.error('API error:', error);
             }
           );
+      } else if (Subject == 'Usluge') {
+        const dateString = this.parseDateStringToISO8601(endTime);
+        const date = this.removeTimeFromDate(dateString);
+        this.dateService.deleteServiceOffering(this.employeeId, date).subscribe(
+          (response) => {
+            console.log('API response:', response);
+          },
+          (error) => {
+            console.error('API error:', error);
+          }
+        );
       }
     }
   }
@@ -311,6 +353,36 @@ export class CalendarComponent implements OnInit {
         ];
       } else {
         this.eventSettings.dataSource = [...processedEvents];
+      }
+    }
+    if (this.serviceOfferings) {
+      const processedServiceOfferings = [];
+
+      for (const key in this.serviceOfferings) {
+        if (this.serviceOfferings.hasOwnProperty(key)) {
+          const date = this.serviceOfferings[key];
+          const processedOffering: any = {
+            Id: processedServiceOfferings.length + 1,
+            Subject: 'Usluge',
+            StartTime: date,
+            EndTime: date,
+            IsAllDay: true,
+            IsBlock: false,
+            IsReadonly: false,
+            RoomId: processedServiceOfferings.length + 1,
+            ResourceId: processedServiceOfferings.length + 1,
+          };
+          processedServiceOfferings.push(processedOffering);
+        }
+      }
+
+      if (Array.isArray(this.eventSettings.dataSource)) {
+        this.eventSettings.dataSource = [
+          ...this.eventSettings.dataSource,
+          ...processedServiceOfferings,
+        ];
+      } else {
+        this.eventSettings.dataSource = [...processedServiceOfferings];
       }
     }
   }

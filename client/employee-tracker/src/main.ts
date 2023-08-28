@@ -4,7 +4,7 @@ import { registerLicense } from '@syncfusion/ej2-base';
 import { AppModule } from './app/app.module';
 
 registerLicense(
-  'Ngo9BigBOggjHTQxAR8/V1NGaF1cWGhBYVF+WmFZfV1gfF9GZVZRQmYuP1ZhSXxQdk1hWH9WcHFVQGBYVEY='
+  'Ngo9BigBOggjHTQxAR8/V1NGaF1cWGhAYVFxWmFZfV1gdl9CZFZRRmY/P1ZhSXxQdk1hUX5adHBVRWRaVkc='
 );
 platformBrowserDynamic()
   .bootstrapModule(AppModule)
