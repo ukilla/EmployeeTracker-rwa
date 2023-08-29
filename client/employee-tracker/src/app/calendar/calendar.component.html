@@ -9,6 +9,9 @@
   (actionBegin)="onActionBegin($event)"
   (cellClick)="onCellClick($event)"
 ></ejs-schedule>
-<div class="service-info">
+<div class="service-info" *ngIf="numberOfServices">
   Broj usluga za taj dan: <span>{{ numberOfServices }}</span>
+</div>
+<div class="service-info" *ngIf="overtimeHours">
+  Broj prekovremenih sati za datum: <span>{{ overtimeHours }}</span>
 </div>

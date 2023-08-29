@@ -26,12 +26,13 @@ export class CalendarComponent implements OnInit {
   @Input() employeeId: number = -1;
   @Input() dutyDates: Date[] = [];
   @Input() vacationDates: Date[] = [];
-  @Input() overtimeDates: Date[] = [];
+  @Input() overtimeDates: { overtimeDate: string; overtimeHours: number }[] = [];
   @Input() takenLeaveDates: Date[] = [];
-  @Input() overtimeHours: number = 0;
   @Input() serviceOfferings: { date: string; numberOfServices: number }[] = [];
   selectedDate: string = '';
   numberOfServices: string | undefined = '';
+  overtimeHours: number | undefined = 0;
+  
 
   private dataManager: DataManager = new DataManager({
     url: 'https://ej2services.syncfusion.com/production/web-services/api/Schedule',
@@ -92,21 +93,6 @@ export class CalendarComponent implements OnInit {
       } else if (Subject.toLowerCase().includes('prekovremeni rad')) {
         const overtimeDate = this.parseDateStringToISO8601(startTime);
         const overtimeHours = parseInt(args.data?.at(0).Location, 10);
-        console.log(overtimeHours);
-        this.dateService
-          .addOvertime(this.employeeId, overtimeDate, overtimeHours)
-          .subscribe(
-            (response) => {
-              console.log('API response:', response);
-            },
-            (error) => {
-              console.error('API error:', error);
-            }
-          );
-      } else if (Subject.toLowerCase().includes('prekovremeni rad')) {
-        const overtimeDate = this.parseDateStringToISO8601(startTime);
-        const overtimeHours = parseInt(args.data?.at(0).Location, 10);
-        console.log(overtimeHours);
         this.dateService
           .addOvertime(this.employeeId, overtimeDate, overtimeHours)
           .subscribe(
@@ -152,10 +138,22 @@ export class CalendarComponent implements OnInit {
     return undefined;
   }
 
+  findNumberOfHoursOvertime(dateToFind: any) {
+    for (const key in this.overtimeDates) {
+      const checkOverlap = key.toString();
+      const overtimeHours=parseInt(this.overtimeDates[key].toString());
+      if (checkOverlap == dateToFind) {
+        return overtimeHours;
+      }
+    }
+    return undefined;
+  }
+
   onCellClick(args: any): void {
     const { startTime } = args;
     this.selectedDate = this.parseDateStringToISO8601(startTime.toString());
     this.numberOfServices = this.findNumberOfServices(this.selectedDate);
+    this.overtimeHours = this.findNumberOfHoursOvertime(this.selectedDate);
   }
   parseDateStringToISO8601(dateString: string): string {
     const parts = dateString.split(' ');
@@ -198,7 +196,6 @@ export class CalendarComponent implements OnInit {
       ).toISOString();
       return isoString;
     }
-
     return '';
   }
 
@@ -267,7 +264,20 @@ export class CalendarComponent implements OnInit {
           }
         );
       }
+      else if (Subject == 'Prekovremeni rad') {
+        const dateString = this.parseDateStringToISO8601(endTime);
+        const date = this.removeTimeFromDate(dateString);
+        this.dateService.deleteOvertime(this.employeeId, date).subscribe(
+          (response) => {
+            console.log('API response:', response);
+          },
+          (error) => {
+            console.error('API error:', error);
+          }
+        );
+      }
     }
+    this.cdr.detectChanges();
   }
 
   ngOnInit(): void {
@@ -293,24 +303,33 @@ export class CalendarComponent implements OnInit {
       }
     }
     if (this.overtimeDates) {
-      const processedEvents = this.overtimeDates.map((date, index) => ({
-        Id: index + 1,
-        Subject: 'Prekovremeni rad',
-        StartTime: date,
-        EndTime: date,
-        IsAllDay: true,
-        IsBlock: false,
-        IsReadonly: false,
-        RoomId: index + 1,
-        ResourceId: index + 1,
-      }));
+      const processedOvertimeDates = [];
+
+      for (const key in this.overtimeDates) {
+        if (this.overtimeDates.hasOwnProperty(key)) {
+          const date = key.toString();
+          const processedOffering: any = {
+            Id: processedOvertimeDates.length + 1,
+            Subject: 'Prekovremeni rad',
+            StartTime: date,
+            EndTime: date,
+            IsAllDay: true,
+            IsBlock: false,
+            IsReadonly: false,
+            RoomId: processedOvertimeDates.length + 1,
+            ResourceId: processedOvertimeDates.length + 1,
+          };
+          processedOvertimeDates.push(processedOffering);
+        }
+      }
+
       if (Array.isArray(this.eventSettings.dataSource)) {
         this.eventSettings.dataSource = [
           ...this.eventSettings.dataSource,
-          ...processedEvents,
+          ...processedOvertimeDates,
         ];
       } else {
-        this.eventSettings.dataSource = [...processedEvents];
+        this.eventSettings.dataSource = [...processedOvertimeDates];
       }
     }
     if (this.vacationDates) {

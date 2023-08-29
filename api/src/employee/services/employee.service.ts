@@ -44,16 +44,15 @@ export class EmployeeService {
 
   async addOvertime(
     employeeId: number,
-    overtimeDate: Date,
+    overtimeDate: string,
     overtimeHours: number,
-  ) {
+  ): Promise<void> {
     const employee = await this.findEmployee(employeeId);
-    if (!employee.overtimeDate) {
-      employee.overtimeDate = [];
+    if (employee) {
+      employee.overtimeDate = employee.overtimeDate || {};
+      employee.overtimeDate[overtimeDate] = overtimeHours;
+      await this.employeeRepository.save(employee);
     }
-    employee.overtimeDate.push(overtimeDate);
-    employee.overtimeHours += overtimeHours;
-    return this.employeeRepository.save(employee);
   }
 
   async addLeaveDate(employeeId: number, takenLeaveDate: Date[]) {
@@ -180,6 +179,17 @@ export class EmployeeService {
       const dateOffering = employee.serviceOfferings[key];
       if (date == dateOffering) {
         delete employee.serviceOfferings[key];
+        await this.employeeRepository.save(employee);
+      }
+    }
+    return this.employeeRepository.save(employee);
+  }
+  async deleteOvertime(employeeId, date) {
+    const employee = await this.findEmployee(employeeId);
+    for (const key in employee.overtimeDate) {
+      const dateOffering = key;
+      if (date == dateOffering) {
+        delete employee.overtimeDate[key];
         await this.employeeRepository.save(employee);
       }
     }

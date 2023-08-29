@@ -11,11 +11,10 @@ export class EmployeeComponent implements OnInit {
   @Input() employeeId: number = -1;
   @Input() firstName: string = '';
   @Input() lastName: string = '';
-  @Input() overtimeDates: Date[] = [];
+  @Input() overtimeDates: { overtimeDate: string; overtimeHours: number }[] = [];
   @Input() takenLeaveDates: Date[] = [];
   @Input() vacationDates: Date[] = [];
   @Input() dutyDates: Date[] = [];
-  @Input() overtimeHours: number = 0;
   @Input() serviceOfferings: { date: string; numberOfServices: number }[] = [];
   overtimeDateCount: number = 0;
   employee: any;

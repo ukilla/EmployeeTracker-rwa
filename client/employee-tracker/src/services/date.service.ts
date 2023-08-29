@@ -52,7 +52,7 @@ export class DateService {
   addOvertime(employeeId: number, overtimeDate: string, overtimeHours: number) {
     const data = {
       employeeId,
-      overtimeDate: [overtimeDate],
+      overtimeDate: overtimeDate,
       overtimeHours: overtimeHours,
     };
     return this.http.put<EmployeeDate>(
@@ -101,6 +101,17 @@ export class DateService {
     };
     return this.http.put<Employee>(
       `${this.apiUrl}/employee/deleteVacationDate`,
+      data,
+      {
+        withCredentials: true,
+      }
+    );
+  }
+
+  deleteOvertime(employeeId: number, date: string) {
+    const data = { employeeId: employeeId, date: date };
+    return this.http.put<Employee>(
+      `${this.apiUrl}/employee/deleteOvertime`,
       data,
       {
         withCredentials: true,

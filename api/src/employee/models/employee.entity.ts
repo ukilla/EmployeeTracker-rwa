@@ -12,8 +12,8 @@ export class EmployeeEntity {
   @Column()
   lastName: string;
 
-  @Column({ type: 'simple-array', nullable: true })
-  overtimeDate: Date[] | null;
+  @Column('json', { nullable: true })
+  overtimeDate: { [date: string]: number } | null;
 
   @Column({ type: 'simple-array', nullable: true })
   dutyDate: Date[] | null;
@@ -23,9 +23,6 @@ export class EmployeeEntity {
 
   @Column({ type: 'simple-array', nullable: true })
   takenLeaveDate: Date[] | null;
-
-  @Column({ type: 'int', nullable: true })
-  overtimeHours: number | null;
 
   @Column('json', { nullable: true })
   serviceOfferings: { [date: string]: number } | null;

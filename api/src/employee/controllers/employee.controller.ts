@@ -20,7 +20,7 @@ export class EmployeeController {
 
   @Put('addOvertime')
   addOvertime(@Body() data) {
-    const { overtimeDate, overtimeHours, employeeId } = data;
+    const { employeeId, overtimeDate, overtimeHours } = data;
     return this.employeeService.addOvertime(
       employeeId,
       overtimeDate,
@@ -112,5 +112,10 @@ export class EmployeeController {
   deleteServiceOffering(@Body() data) {
     const { employeeId, date } = data;
     return this.employeeService.deleteServiceOffering(employeeId, date);
+  }
+  @Put('deleteOvertime')
+  deleteOvertime(@Body() data) {
+    const { employeeId, date } = data;
+    return this.employeeService.deleteOvertime(employeeId, date);
   }
 }
