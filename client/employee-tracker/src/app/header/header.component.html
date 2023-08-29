@@ -1,25 +1,51 @@
 <nav class="navbar fixed-top navbar-expand-sm navbar-dark bg-dark">
   <a class="navbar-brand" href="#">Zaposleni Info</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarNav"
+    aria-controls="navbarNav"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
-      <li class="nav-item active"  *ngIf="isLoggedIn">
+      <li class="nav-item active" *ngIf="isLoggedIn">
         <a class="nav-link" routerLink="/">Glavna strana</a>
       </li>
-      <li class="nav-item"  *ngIf="isLoggedIn">
+      <li class="nav-item" *ngIf="isLoggedIn">
         <a class="nav-link" routerLink="/employees">Zaposleni</a>
       </li>
-      <li class="nav-item"  *ngIf="isLoggedIn">
+      <li class="nav-item" *ngIf="isLoggedIn">
         <a class="nav-link" routerLink="/departments">Odeljenja</a>
       </li>
     </ul>
   </div>
-  
+
   <div class="ml-auto">
-    <button class="btn btn-outline-success" *ngIf="isLoggedIn" (click)="logout()">Log Out</button>
-    <button class="btn btn-outline-success" *ngIf="!isLoggedIn" routerLink="/register">Register</button>
-    <button class="btn btn-outline-success" *ngIf="!isLoggedIn" routerLink="/login">Log In</button>
+    <button
+      class="btn btn-outline-success"
+      *ngIf="isLoggedIn"
+      (click)="logout()"
+    >
+      Log Out
+    </button>
+    <button
+      class="btn btn-outline-success button-spacing"
+      *ngIf="!isLoggedIn"
+      routerLink="/register"
+    >
+      Register
+    </button>
+    <button
+      class="btn btn-outline-success"
+      *ngIf="!isLoggedIn"
+      routerLink="/login"
+    >
+      Log In
+    </button>
   </div>
 </nav>
