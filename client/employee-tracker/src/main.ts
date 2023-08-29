@@ -1,3 +1,5 @@
+/// <reference types="@angular/localize" />
+
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { registerLicense } from '@syncfusion/ej2-base';
 

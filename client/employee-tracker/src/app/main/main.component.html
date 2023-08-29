@@ -1,24 +1,32 @@
-<div class="main-page">
-  <header class="header">
-    <div class="logo">
-      <img
-        src="https://i.pinimg.com/originals/41/a2/56/41a256c3b494954e162e3b00710ca926.png"
-        alt="Logo"
-      />
-    </div>
-    <h1 class="tagline">Efektivan Rad Sa Zaposlenima</h1>
-  </header>
-
-  <section class="hero">
-    <div class="hero-circle"></div>
-    <div class="hero-content">
-      <div class="" *ngIf="isLoggedIn">
-        <a routerLink="/employees" class="cta-button">Svi zaposleni</a>
+<div style="padding-top: 70px">
+  <div class="container mt-5">
+    <div class="text-center mb-4">
+      <div style="margin-top: 20px">
+        <button class="btn btn-outline-success" (click)="employeesRedirect()">
+          Pogledajte zaposlene
+        </button>
       </div>
     </div>
-  </section>
-
-  <section class="testimonials"></section>
-
-  <footer class="footer"></footer>
+    <div class="row">
+      <div class="col-md-12">
+        <h2 class="mb-4">Kratak pregled statistike</h2>
+        <div class="card">
+          <div class="card-body">
+            <p class="card-text">
+              Ukupan broj dana godišnjih odmora u poslednjih mesec dana:
+              {{ totalVacationDateInLastMonth }}
+            </p>
+            <p class="card-text">
+              Ukupan broj slobodnih dana u poslednjih nedelju dana:
+              {{ totalTakenLeaveDatesInLastWeek }}
+            </p>
+            <p class="card-text">
+              Ukupan broj usluga u poslednja 3 dana:
+              {{ totalServiceOfferingsInLast2Days }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

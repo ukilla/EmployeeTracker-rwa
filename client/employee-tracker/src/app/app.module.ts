@@ -39,6 +39,7 @@ import {
 } from '@syncfusion/ej2-angular-schedule';
 import { DepartmentsComponent } from './departments/departments.component';
 import { DepartmentTabComponent } from './department-tab/department-tab.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -73,6 +74,7 @@ import { DepartmentTabComponent } from './department-tab/department-tab.componen
     DateTimePickerModule,
     ScheduleModule,
     RecurrenceEditorModule,
+    NgbModule,
   ],
   providers: [
     DayService,
