@@ -53,3 +53,15 @@ button[igxButton]:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
+
+.add-container {
+  margin-top: 15px;
+}
+
+.date-picker {
+  margin-right: 10px;
+}
+
+.button-container{
+  margin-bottom: 5px;
+}
