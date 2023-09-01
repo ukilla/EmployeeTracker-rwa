@@ -136,7 +136,7 @@ export class CalendarComponent implements OnInit {
           title: 'Dezurstvo',
           start: startOfDay(parseISO(this.selected)),
           end: endOfDay(parseISO(this.selected)),
-          color: { primary: 'yellow', secondary: 'red' },
+          color: { primary: 'green', secondary: 'red' },
           draggable: true,
           resizable: {
             beforeStart: true,
@@ -165,7 +165,7 @@ export class CalendarComponent implements OnInit {
           title: 'Slobodan dan',
           start: startOfDay(parseISO(this.selected)),
           end: endOfDay(parseISO(this.selected)),
-          color: { primary: 'purple', secondary: 'red' },
+          color: { primary: 'red', secondary: 'red' },
           draggable: true,
           resizable: {
             beforeStart: true,
@@ -194,7 +194,7 @@ export class CalendarComponent implements OnInit {
           title: 'Godisnji odmor',
           start: startOfDay(parseISO(this.selected)),
           end: endOfDay(parseISO(this.selected)),
-          color: { primary: 'red', secondary: 'yellow' },
+          color: { primary: 'orange', secondary: 'red' },
           draggable: true,
           resizable: {
             beforeStart: true,
@@ -223,7 +223,7 @@ export class CalendarComponent implements OnInit {
           title: 'Prekovremeni rad',
           start: startOfDay(parseISO(this.selected)),
           end: endOfDay(parseISO(this.selected)),
-          color: { primary: 'red', secondary: 'yellow' },
+          color: { primary: 'blue', secondary: 'red' },
           draggable: true,
           resizable: {
             beforeStart: true,
@@ -253,7 +253,7 @@ export class CalendarComponent implements OnInit {
           title: 'Usluge',
           start: startOfDay(parseISO(this.selected)),
           end: endOfDay(parseISO(this.selected)),
-          color: { primary: 'red', secondary: 'yellow' },
+          color: { primary: '#9e13a1', secondary: 'red' },
           draggable: true,
           resizable: {
             beforeStart: true,
@@ -398,7 +398,7 @@ export class CalendarComponent implements OnInit {
     if (this.dutyDates) {
       this.dutyDates.map((date, index) => {
         const newColor = {
-          primary: 'yellow',
+          primary: 'green',
           secondary: 'red',
         };
         const newEvent: CalendarEvent = {
@@ -429,7 +429,7 @@ export class CalendarComponent implements OnInit {
     if (this.vacationDates) {
       this.vacationDates.map((date, index) => {
         const newColor = {
-          primary: 'yellow',
+          primary: 'orange',
           secondary: 'red',
         };
         const newEvent: CalendarEvent = {
@@ -443,7 +443,7 @@ export class CalendarComponent implements OnInit {
     if (this.takenLeaveDates) {
       this.takenLeaveDates.map((date, index) => {
         const newColor = {
-          primary: 'purple',
+          primary: 'red',
           secondary: 'red',
         };
         const newEvent: CalendarEvent = {
@@ -459,7 +459,7 @@ export class CalendarComponent implements OnInit {
         if (this.serviceOfferings.hasOwnProperty(key)) {
           const date = this.serviceOfferings[key];
           const newColor = {
-            primary: 'blue',
+            primary: '#9e13a1',
             secondary: 'red',
           };
           const newEvent: CalendarEvent = {

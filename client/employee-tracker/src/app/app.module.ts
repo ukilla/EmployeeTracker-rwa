@@ -20,14 +20,6 @@ import { EmployeeComponent } from './employee/employee.component';
 import { MatIconModule } from '@angular/material/icon';
 import { CalendarComponent } from './calendar/calendar.component';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
-// import { IgxCalendarModule, IgxDialogModule } from 'igniteui-angular';
-// import {
-//   CalendarModule,
-//   DatePickerModule,
-//   TimePickerModule,
-//   DateRangePickerModule,
-//   DateTimePickerModule,
-// } from '@syncfusion/ej2-angular-calendars';
 import {
   ScheduleModule,
   RecurrenceEditorModule,

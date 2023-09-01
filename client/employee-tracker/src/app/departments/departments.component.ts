@@ -11,6 +11,7 @@ export class DepartmentsComponent implements OnInit {
   constructor(private employeeService: EmployeeService) {}
   departments: Department[] = [];
   employees: Employee[] = [];
+  searchQuery: string = ''; 
   ngOnInit() {
     this.fetchDepartments();
   }
@@ -28,5 +29,15 @@ export class DepartmentsComponent implements OnInit {
         console.error('Error fetching departments:', error);
       }
     );
+  }
+
+  filterDepartments() {
+    if (this.searchQuery) {
+      this.departments = this.departments.filter((department) =>
+        department.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
+    } else {
+      this.fetchDepartments();
+    }
   }
 }

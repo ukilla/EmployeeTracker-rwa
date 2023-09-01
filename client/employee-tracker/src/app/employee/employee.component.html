@@ -4,9 +4,6 @@
   </div>
   <div class="info-container">
     <div class="name">{{ firstName }} {{ lastName }}</div>
-    <div class="overtimeHours">
-      Broj prekovremenih dana: {{ overtimeDateCount }}
-    </div>
   </div>
   <div class="calendar">
     <app-calendar
@@ -20,3 +17,18 @@
   </div>
   <button class="close-button" (click)="onDeleteButtonClick()">&times;</button>
 </div>
+
+<ng-template #modalContent let-close="close">
+  <div class="modal-header">
+    <h5 class="modal-title">
+      Da li zelite da obrisete zaposlenog {{ employee.firstName }}
+      {{ employee.lastName }}?
+    </h5>
+    <button type="button" class="close" (click)="close()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="deleteEmployee()">Obrisi</button>
+  </div>
+</ng-template>
