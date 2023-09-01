@@ -55,6 +55,7 @@ export class DateService {
       overtimeDate: overtimeDate,
       overtimeHours: overtimeHours,
     };
+    console.log(data);
     return this.http.put<EmployeeDate>(
       `${this.apiUrl}/employee/addOvertime`,
       data,

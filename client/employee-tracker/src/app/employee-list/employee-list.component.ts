@@ -29,7 +29,7 @@ export class EmployeeListComponent implements OnInit {
     this.fetchEmployees();
   }
 
-  constructor(private employeeService: EmployeeService) {} // Inject your API service
+  constructor(private employeeService: EmployeeService) {} 
 
   onSubmit(form: NgForm) {
     if (form.valid) {

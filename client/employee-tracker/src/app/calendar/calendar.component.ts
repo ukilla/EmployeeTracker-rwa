@@ -5,17 +5,29 @@ import {
   ViewChild,
   AfterViewInit,
   ChangeDetectorRef,
+  TemplateRef,
 } from '@angular/core';
-import { CalendarEvent } from 'angular-calendar';
+import {
+  CalendarEvent,
+  CalendarEventAction,
+  CalendarEventTimesChangedEvent,
+  CalendarView,
+} from 'angular-calendar';
 import { Employee } from '../models/employee';
 import { DateService } from 'src/services/date.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {
-  ActionEventArgs,
-  EventSettingsModel,
-  PopupOpenEventArgs,
-  View,
-} from '@syncfusion/ej2-angular-schedule';
-import { DataManager, ODataV4Adaptor, Query } from '@syncfusion/ej2-data';
+  startOfDay,
+  endOfDay,
+  subDays,
+  addDays,
+  endOfMonth,
+  isSameDay,
+  isSameMonth,
+  addHours,
+  parseISO,
+} from 'date-fns';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-calendar',
@@ -23,385 +35,440 @@ import { DataManager, ODataV4Adaptor, Query } from '@syncfusion/ej2-data';
   styleUrls: ['./calendar.component.css'],
 })
 export class CalendarComponent implements OnInit {
+  @ViewChild('modalContent', { static: true })
+  modalContent!: TemplateRef<any>;
   @Input() employeeId: number = -1;
   @Input() dutyDates: Date[] = [];
   @Input() vacationDates: Date[] = [];
-  @Input() overtimeDates: { overtimeDate: string; overtimeHours: number }[] = [];
+  @Input() overtimeDates: { overtimeDate: string; overtimeHours: number }[] =
+    [];
   @Input() takenLeaveDates: Date[] = [];
   @Input() serviceOfferings: { date: string; numberOfServices: number }[] = [];
   selectedDate: string = '';
-  numberOfServices: string | undefined = '';
-  overtimeHours: number | undefined = 0;
-  
-
-  private dataManager: DataManager = new DataManager({
-    url: 'https://ej2services.syncfusion.com/production/web-services/api/Schedule',
-    adaptor: new ODataV4Adaptor(),
-    crossDomain: true,
-  });
-  public eventSettings: EventSettingsModel = {
-    dataSource: [],
-  };
-
-  public setView: View = 'Month';
-
+  overtimeSelected: boolean = false;
+  serviceOfferSelected: boolean = false;
+  numberOfServices: number = 0;
+  activeDayIsOpen: boolean = false;
+  overtimeHours: number = 0;
+  refresh = new Subject<void>();
+  selectedEvent: any;
+  eventType: string[] = [
+    'Dezurstvo',
+    'Slobodan dan',
+    'Godisnji odmor',
+    'Usluge',
+    'Prekovremeni rad',
+  ];
+  view: CalendarView = CalendarView.Month;
+  CalendarView = CalendarView;
   public setDate: Date = new Date();
+  public selected: any;
+  public viewDate = new Date();
+  events: CalendarEvent[] = [];
 
   constructor(
     private dateService: DateService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private modal: NgbModal
   ) {}
 
-  onActionComplete(args: ActionEventArgs): void {
-    if (args.requestType === 'eventCreated') {
-      const { Subject, StartTime } = args.data?.at(0);
-      const startTime: string = StartTime.toString();
-      if (Subject.toLowerCase().includes('dezurstvo')) {
-        const dutyDateString = this.parseDateStringToISO8601(startTime);
-        this.dateService.addDutyDate(this.employeeId, dutyDateString).subscribe(
-          (response) => {
-            console.log('API response:', response);
-          },
-          (error) => {
-            console.error('API error:', error);
-          }
-        );
-      } else if (Subject.toLowerCase().includes('godisnji odmor')) {
-        const vacationDateString = this.parseDateStringToISO8601(startTime);
-        this.dateService
-          .addVacationDate(this.employeeId, vacationDateString)
-          .subscribe(
-            (response) => {
-              console.log('API response:', response);
-            },
-            (error) => {
-              console.error('API error:', error);
-            }
-          );
-      } else if (Subject.toLowerCase().includes('slobodan dan')) {
-        const takenLeaveString = this.parseDateStringToISO8601(startTime);
-        this.dateService
-          .addTakenLeave(this.employeeId, takenLeaveString)
-          .subscribe(
-            (response) => {
-              console.log('API response:', response);
-            },
-            (error) => {
-              console.error('API error:', error);
-            }
-          );
-      } else if (Subject.toLowerCase().includes('prekovremeni rad')) {
-        const overtimeDate = this.parseDateStringToISO8601(startTime);
-        const overtimeHours = parseInt(args.data?.at(0).Location, 10);
-        this.dateService
-          .addOvertime(this.employeeId, overtimeDate, overtimeHours)
-          .subscribe(
-            (response) => {
-              console.log('API response:', response);
-            },
-            (error) => {
-              console.error('API error:', error);
-            }
-          );
-      } else if (
-        Subject.toLowerCase().includes('usluga') ||
-        Subject.toLowerCase().includes('usluge')
+  dayClicked({ date, events }: { date: Date; events: CalendarEvent[] }): void {
+    if (isSameMonth(date, this.viewDate)) {
+      if (
+        (isSameDay(this.viewDate, date) && this.activeDayIsOpen === true) ||
+        events.length === 0
       ) {
-        const date = this.parseDateStringToISO8601(startTime);
-        const numberOfServices = parseInt(args.data?.at(0).Location, 10);
-        this.dateService
-          .addServiceOfferings(this.employeeId, date, numberOfServices)
-          .subscribe(
-            (response) => {
-              console.log('API response:', response);
-            },
-            (error) => {
-              console.error('API error:', error);
-            }
-          );
+        this.activeDayIsOpen = false;
+      } else {
+        this.activeDayIsOpen = true;
       }
+      this.viewDate = date;
     }
   }
 
-  removeTimeFromDate(dateString: string): string {
-    const modifiedDateString = dateString.split('T')[0] + 'T00:00:00.000Z';
-    return modifiedDateString;
-  }
+  modalData: {
+    action: string;
+    event: CalendarEvent;
+  } = { action: '', event: {} as CalendarEvent };
 
-  findNumberOfServices(dateToFind: any) {
-    for (const key in this.serviceOfferings) {
-      const checkOverlap = this.serviceOfferings[key];
-      if (checkOverlap == dateToFind) {
-        return key;
+  eventTimesChanged({
+    event,
+    newStart,
+    newEnd,
+  }: CalendarEventTimesChangedEvent): void {
+    this.events = this.events.map((iEvent) => {
+      if (iEvent === event) {
+        return {
+          ...event,
+          start: newStart,
+          end: newEnd,
+        };
       }
-    }
-    return undefined;
+      return iEvent;
+    });
+    this.handleEvent('Dropped or resized', event);
   }
 
-  findNumberOfHoursOvertime(dateToFind: any) {
-    for (const key in this.overtimeDates) {
-      const checkOverlap = key.toString();
-      const overtimeHours=parseInt(this.overtimeDates[key].toString());
-      if (checkOverlap == dateToFind) {
-        return overtimeHours;
-      }
-    }
-    return undefined;
+  handleEvent(action: string, event: CalendarEvent): void {
+    this.selected = event.start;
+    this.modalData = { event, action };
+    this.modal.open(this.modalContent, { size: 'lg' });
   }
 
-  onCellClick(args: any): void {
-    const { startTime } = args;
-    this.selectedDate = this.parseDateStringToISO8601(startTime.toString());
-    this.numberOfServices = this.findNumberOfServices(this.selectedDate);
-    this.overtimeHours = this.findNumberOfHoursOvertime(this.selectedDate);
-  }
-  parseDateStringToISO8601(dateString: string): string {
-    const parts = dateString.split(' ');
-
-    if (parts.length < 6) {
-      return '';
+  onSelectChange() {
+    if (this.selectedEvent == 'Prekovremeni rad') {
+      this.overtimeSelected = true;
+      this.serviceOfferSelected = false;
+    } else if (this.selectedEvent == 'Usluge') {
+      this.serviceOfferSelected = true;
+      this.overtimeSelected = false;
+    } else {
+      this.overtimeSelected = false;
+      this.serviceOfferSelected = false;
     }
+  }
 
-    const day = parts[2];
-    const monthStr = parts[1];
-    const year = parts[3];
-    const time = parts[4];
-
-    const offset = parts.slice(5).join(' ');
-
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    const month = months.indexOf(monthStr);
-
-    if (month !== -1) {
-      const isoString = new Date(
-        Date.UTC(
-          Number(year),
-          month,
-          Number(day),
-          ...time.split(':').map(Number)
+  addEvent(): void {
+    if (this.selectedEvent == 'Dezurstvo') {
+      this.events = [
+        ...this.events,
+        {
+          title: 'Dezurstvo',
+          start: startOfDay(parseISO(this.selected)),
+          end: endOfDay(parseISO(this.selected)),
+          color: { primary: 'yellow', secondary: 'red' },
+          draggable: true,
+          resizable: {
+            beforeStart: true,
+            afterEnd: true,
+          },
+        },
+      ];
+      this.dateService
+        .addDutyDate(
+          this.employeeId,
+          this.parseDateStringToISO8601(this.selected)
         )
-      ).toISOString();
-      return isoString;
+        .subscribe(
+          (response) => {
+            console.log('API response:', response);
+          },
+          (error) => {
+            console.error('API error:', error);
+          }
+        );
     }
+    if (this.selectedEvent == 'Slobodan dan') {
+      this.events = [
+        ...this.events,
+        {
+          title: 'Slobodan dan',
+          start: startOfDay(parseISO(this.selected)),
+          end: endOfDay(parseISO(this.selected)),
+          color: { primary: 'purple', secondary: 'red' },
+          draggable: true,
+          resizable: {
+            beforeStart: true,
+            afterEnd: true,
+          },
+        },
+      ];
+      this.dateService
+        .addTakenLeave(
+          this.employeeId,
+          this.parseDateStringToISO8601(this.selected)
+        )
+        .subscribe(
+          (response) => {
+            console.log('API response:', response);
+          },
+          (error) => {
+            console.error('API error:', error);
+          }
+        );
+    }
+    if (this.selectedEvent == 'Godisnji odmor') {
+      this.events = [
+        ...this.events,
+        {
+          title: 'Godisnji odmor',
+          start: startOfDay(parseISO(this.selected)),
+          end: endOfDay(parseISO(this.selected)),
+          color: { primary: 'red', secondary: 'yellow' },
+          draggable: true,
+          resizable: {
+            beforeStart: true,
+            afterEnd: true,
+          },
+        },
+      ];
+      this.dateService
+        .addVacationDate(
+          this.employeeId,
+          this.parseDateStringToISO8601(this.selected)
+        )
+        .subscribe(
+          (response) => {
+            console.log('API response:', response);
+          },
+          (error) => {
+            console.error('API error:', error);
+          }
+        );
+    }
+    if (this.selectedEvent == 'Prekovremeni rad') {
+      this.events = [
+        ...this.events,
+        {
+          title: 'Prekovremeni rad',
+          start: startOfDay(parseISO(this.selected)),
+          end: endOfDay(parseISO(this.selected)),
+          color: { primary: 'red', secondary: 'yellow' },
+          draggable: true,
+          resizable: {
+            beforeStart: true,
+            afterEnd: true,
+          },
+        },
+      ];
+      this.dateService
+        .addOvertime(
+          this.employeeId,
+          this.parseDateStringToISO8601(this.selected),
+          this.overtimeHours
+        )
+        .subscribe(
+          (response) => {
+            console.log('API response:', response);
+          },
+          (error) => {
+            console.error('API error:', error);
+          }
+        );
+    }
+    if (this.selectedEvent == 'Usluge') {
+      this.events = [
+        ...this.events,
+        {
+          title: 'Usluge',
+          start: startOfDay(parseISO(this.selected)),
+          end: endOfDay(parseISO(this.selected)),
+          color: { primary: 'red', secondary: 'yellow' },
+          draggable: true,
+          resizable: {
+            beforeStart: true,
+            afterEnd: true,
+          },
+        },
+      ];
+      this.dateService
+        .addServiceOfferings(
+          this.employeeId,
+          this.parseDateStringToISO8601(this.selected),
+          this.numberOfServices
+        )
+        .subscribe(
+          (response) => {
+            console.log('API response:', response);
+          },
+          (error) => {
+            console.error('API error:', error);
+          }
+        );
+    }
+  }
+
+  deleteEvent(eventToDelete: CalendarEvent) {
+    this.events = this.events.filter((event) => event !== eventToDelete);
+  }
+
+  closeOpenMonthViewDay() {
+    this.activeDayIsOpen = false;
+  }
+
+  handleDelete(event: any) {
+    const eventJsonOut = JSON.parse(JSON.stringify(event));
+    const { start } = eventJsonOut;
+    if (event.title.toString().includes('Prekovremeni rad')) {
+      this.events = this.events.filter((event) => {
+        const eventJson = JSON.parse(JSON.stringify(event));
+        const startParsed = eventJson.start;
+        return !(start == startParsed && eventJsonOut.title == eventJson.title);
+      });
+      this.dateService.deleteOvertime(this.employeeId, start).subscribe(
+        (response) => {
+          console.log('API response:', response);
+        },
+        (error) => {
+          console.error('API error:', error);
+        }
+      );
+      this.modal.dismissAll();
+    }
+    if (event.title.toString().includes('Godisnji odmor')) {
+      this.events = this.events.filter((event) => {
+        const eventJson = JSON.parse(JSON.stringify(event));
+        const startParsed = eventJson.start;
+        return !(start == startParsed && eventJsonOut.title == eventJson.title);
+      });
+      this.dateService.deleteVacationDate(this.employeeId, start).subscribe(
+        (response) => {
+          console.log('API response:', response);
+        },
+        (error) => {
+          console.error('API error:', error);
+        }
+      );
+      this.modal.dismissAll();
+    }
+    if (event.title.toString().includes('Broj usluga')) {
+      this.events = this.events.filter((event) => {
+        const eventJson = JSON.parse(JSON.stringify(event));
+        const startParsed = eventJson.start;
+        return !(start == startParsed && eventJsonOut.title == eventJson.title);
+      });
+      this.dateService.deleteServiceOffering(this.employeeId, start).subscribe(
+        (response) => {
+          console.log('API response:', response);
+        },
+        (error) => {
+          console.error('API error:', error);
+        }
+      );
+      this.modal.dismissAll();
+    }
+    if (event.title.toString().includes('Dezurstvo')) {
+      this.events = this.events.filter((event) => {
+        const eventJson = JSON.parse(JSON.stringify(event));
+        const startParsed = eventJson.start;
+        return !(start == startParsed && eventJsonOut.title == eventJson.title);
+      });
+      this.dateService.deleteDutyDate(this.employeeId, start).subscribe(
+        (response) => {
+          console.log('API response:', response);
+        },
+        (error) => {
+          console.error('API error:', error);
+        }
+      );
+      this.modal.dismissAll();
+    }
+    if (event.title.toString().includes('Slobodan dan')) {
+      this.events = this.events.filter((event) => {
+        const eventJson = JSON.parse(JSON.stringify(event));
+        const startParsed = eventJson.start;
+        return !(start == startParsed && eventJsonOut.title == eventJson.title);
+      });
+      this.dateService.deleteTakenLeaveDate(this.employeeId, start).subscribe(
+        (response) => {
+          console.log('API response:', response);
+        },
+        (error) => {
+          console.error('API error:', error);
+        }
+      );
+      this.modal.dismissAll();
+    }
+  }
+
+  setView(view: CalendarView) {
+    this.view = view;
+  }
+
+  onDateSelected() {}
+
+  parseDateStringToISO8601(dateString: string): string {
+    const parts = dateString.split('-');
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10);
+      const day = parseInt(parts[2], 10);
+      if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
+        const isoString = new Date(
+          Date.UTC(year, month - 1, day, 0, 0, 0, 0)
+        ).toISOString();
+        return isoString;
+      }
+    }
+
     return '';
-  }
-
-  onPopupOpen(args: PopupOpenEventArgs): void {
-    if (args.type === 'QuickInfo') {
-    }
-  }
-
-  onActionBegin(args: ActionEventArgs): void {
-    if (args.requestType === 'eventCreate') {
-    }
-
-    if (args.requestType === 'eventRemove') {
-      const { Subject, StartTime, EndTime } = args.data?.at(0);
-      console.log(args.data?.at(0));
-      const startTime: string = StartTime.toString();
-      const endTime: string = EndTime.toString();
-      if (Subject == 'Dezurstvo') {
-        const dutyDateDeleteString = this.parseDateStringToISO8601(startTime);
-        const dutyDateDelete = this.removeTimeFromDate(dutyDateDeleteString);
-        this.dateService
-          .deleteDutyDate(this.employeeId, dutyDateDelete)
-          .subscribe(
-            (response) => {
-              console.log('API response:', response);
-            },
-            (error) => {
-              console.error('API error:', error);
-            }
-          );
-      } else if (Subject == 'Godisnji odmor') {
-        const vacationDateString = this.parseDateStringToISO8601(startTime);
-        const vacationDateDelete = this.removeTimeFromDate(vacationDateString);
-        this.dateService
-          .deleteVacationDate(this.employeeId, vacationDateDelete)
-          .subscribe(
-            (response) => {
-              console.log('API response:', response);
-            },
-            (error) => {
-              console.error('API error:', error);
-            }
-          );
-      } else if (Subject == 'Slobodan dan') {
-        const takenLeaveString = this.parseDateStringToISO8601(startTime);
-        const takenLeaveDateDelete = this.removeTimeFromDate(takenLeaveString);
-        this.dateService
-          .deleteTakenLeaveDate(this.employeeId, takenLeaveDateDelete)
-          .subscribe(
-            (response) => {
-              console.log('API response:', response);
-            },
-            (error) => {
-              console.error('API error:', error);
-            }
-          );
-      } else if (Subject == 'Usluge') {
-        const dateString = this.parseDateStringToISO8601(endTime);
-        const date = this.removeTimeFromDate(dateString);
-        this.dateService.deleteServiceOffering(this.employeeId, date).subscribe(
-          (response) => {
-            console.log('API response:', response);
-          },
-          (error) => {
-            console.error('API error:', error);
-          }
-        );
-      }
-      else if (Subject == 'Prekovremeni rad') {
-        const dateString = this.parseDateStringToISO8601(endTime);
-        const date = this.removeTimeFromDate(dateString);
-        this.dateService.deleteOvertime(this.employeeId, date).subscribe(
-          (response) => {
-            console.log('API response:', response);
-          },
-          (error) => {
-            console.error('API error:', error);
-          }
-        );
-      }
-    }
-    this.cdr.detectChanges();
   }
 
   ngOnInit(): void {
     if (this.dutyDates) {
-      const processedEvents = this.dutyDates.map((date, index) => ({
-        Id: index + 1,
-        Subject: 'Dezurstvo',
-        StartTime: date,
-        EndTime: date,
-        IsAllDay: true,
-        IsBlock: false,
-        IsReadonly: false,
-        RoomId: index + 1,
-        ResourceId: index + 1,
-      }));
-      if (Array.isArray(this.eventSettings.dataSource)) {
-        this.eventSettings.dataSource = [
-          ...this.eventSettings.dataSource,
-          ...processedEvents,
-        ];
-      } else {
-        this.eventSettings.dataSource = [...processedEvents];
-      }
+      this.dutyDates.map((date, index) => {
+        const newColor = {
+          primary: 'yellow',
+          secondary: 'red',
+        };
+        const newEvent: CalendarEvent = {
+          start: new Date(date.toString()),
+          color: newColor,
+          title: 'Dezurstvo',
+        };
+        this.events.push(newEvent);
+      });
     }
     if (this.overtimeDates) {
-      const processedOvertimeDates = [];
-
       for (const key in this.overtimeDates) {
         if (this.overtimeDates.hasOwnProperty(key)) {
           const date = key.toString();
-          const processedOffering: any = {
-            Id: processedOvertimeDates.length + 1,
-            Subject: 'Prekovremeni rad',
-            StartTime: date,
-            EndTime: date,
-            IsAllDay: true,
-            IsBlock: false,
-            IsReadonly: false,
-            RoomId: processedOvertimeDates.length + 1,
-            ResourceId: processedOvertimeDates.length + 1,
+          const newColor = {
+            primary: 'blue',
+            secondary: 'red',
           };
-          processedOvertimeDates.push(processedOffering);
+          const newEvent: CalendarEvent = {
+            start: new Date(date.toString()),
+            color: newColor,
+            title: `Prekovremeni rad ${this.overtimeDates[key]}h`,
+          };
+          this.events.push(newEvent);
         }
-      }
-
-      if (Array.isArray(this.eventSettings.dataSource)) {
-        this.eventSettings.dataSource = [
-          ...this.eventSettings.dataSource,
-          ...processedOvertimeDates,
-        ];
-      } else {
-        this.eventSettings.dataSource = [...processedOvertimeDates];
       }
     }
     if (this.vacationDates) {
-      const processedEvents = this.vacationDates.map((date, index) => ({
-        Id: index + 1,
-        Subject: 'Godisnji odmor',
-        StartTime: date,
-        EndTime: date,
-        IsAllDay: true,
-        IsBlock: false,
-        IsReadonly: false,
-        RoomId: index + 1,
-        ResourceId: index + 1,
-      }));
-      if (Array.isArray(this.eventSettings.dataSource)) {
-        this.eventSettings.dataSource = [
-          ...this.eventSettings.dataSource,
-          ...processedEvents,
-        ];
-      } else {
-        this.eventSettings.dataSource = [...processedEvents];
-      }
+      this.vacationDates.map((date, index) => {
+        const newColor = {
+          primary: 'yellow',
+          secondary: 'red',
+        };
+        const newEvent: CalendarEvent = {
+          start: new Date(date.toString()),
+          color: newColor,
+          title: 'Godisnji odmor',
+        };
+        this.events.push(newEvent);
+      });
     }
     if (this.takenLeaveDates) {
-      const processedEvents = this.takenLeaveDates.map((date, index) => ({
-        Id: index + 1,
-        Subject: 'Slobodan dan',
-        StartTime: date,
-        EndTime: date,
-        IsAllDay: true,
-        IsBlock: false,
-        IsReadonly: false,
-        RoomId: index + 1,
-        ResourceId: index + 1,
-      }));
-      if (Array.isArray(this.eventSettings.dataSource)) {
-        this.eventSettings.dataSource = [
-          ...this.eventSettings.dataSource,
-          ...processedEvents,
-        ];
-      } else {
-        this.eventSettings.dataSource = [...processedEvents];
-      }
+      this.takenLeaveDates.map((date, index) => {
+        const newColor = {
+          primary: 'purple',
+          secondary: 'red',
+        };
+        const newEvent: CalendarEvent = {
+          start: new Date(date.toString()),
+          color: newColor,
+          title: 'Slobodan dan',
+        };
+        this.events.push(newEvent);
+      });
     }
     if (this.serviceOfferings) {
-      const processedServiceOfferings = [];
-
       for (const key in this.serviceOfferings) {
         if (this.serviceOfferings.hasOwnProperty(key)) {
           const date = this.serviceOfferings[key];
-          const processedOffering: any = {
-            Id: processedServiceOfferings.length + 1,
-            Subject: 'Usluge',
-            StartTime: date,
-            EndTime: date,
-            IsAllDay: true,
-            IsBlock: false,
-            IsReadonly: false,
-            RoomId: processedServiceOfferings.length + 1,
-            ResourceId: processedServiceOfferings.length + 1,
+          const newColor = {
+            primary: 'blue',
+            secondary: 'red',
           };
-          processedServiceOfferings.push(processedOffering);
+          const newEvent: CalendarEvent = {
+            start: new Date(date.toString()),
+            color: newColor,
+            title: `Broj usluga: ${key}  `,
+          };
+          this.events.push(newEvent);
         }
-      }
-
-      if (Array.isArray(this.eventSettings.dataSource)) {
-        this.eventSettings.dataSource = [
-          ...this.eventSettings.dataSource,
-          ...processedServiceOfferings,
-        ];
-      } else {
-        this.eventSettings.dataSource = [...processedServiceOfferings];
       }
     }
   }

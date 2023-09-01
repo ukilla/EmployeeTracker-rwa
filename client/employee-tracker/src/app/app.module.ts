@@ -20,14 +20,14 @@ import { EmployeeComponent } from './employee/employee.component';
 import { MatIconModule } from '@angular/material/icon';
 import { CalendarComponent } from './calendar/calendar.component';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
-import { IgxCalendarModule, IgxDialogModule } from 'igniteui-angular';
-import {
-  CalendarModule,
-  DatePickerModule,
-  TimePickerModule,
-  DateRangePickerModule,
-  DateTimePickerModule,
-} from '@syncfusion/ej2-angular-calendars';
+// import { IgxCalendarModule, IgxDialogModule } from 'igniteui-angular';
+// import {
+//   CalendarModule,
+//   DatePickerModule,
+//   TimePickerModule,
+//   DateRangePickerModule,
+//   DateTimePickerModule,
+// } from '@syncfusion/ej2-angular-calendars';
 import {
   ScheduleModule,
   RecurrenceEditorModule,
@@ -40,6 +40,7 @@ import {
 import { DepartmentsComponent } from './departments/departments.component';
 import { DepartmentTabComponent } from './department-tab/department-tab.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { DateAdapter,CalendarModule } from 'angular-calendar';
 
 @NgModule({
   declarations: [
@@ -65,13 +66,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     HttpClientModule,
     BrowserAnimationsModule,
     MatIconModule,
-    IgxCalendarModule,
-    IgxDialogModule,
-    CalendarModule,
-    DatePickerModule,
-    TimePickerModule,
-    DateRangePickerModule,
-    DateTimePickerModule,
+    CalendarModule.forRoot({ provide: DateAdapter,
+      useFactory: adapterFactory,}),
     ScheduleModule,
     RecurrenceEditorModule,
     NgbModule,

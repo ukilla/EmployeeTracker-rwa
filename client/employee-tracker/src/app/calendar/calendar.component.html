@@ -1,17 +1,133 @@
-<ejs-schedule
-  height="500px"
-  width="1000px"
-  [currentView]="setView"
-  [eventSettings]="eventSettings"
-  [selectedDate]="setDate"
-  (popupOpen)="onPopupOpen($event)"
-  (actionComplete)="onActionComplete($event)"
-  (actionBegin)="onActionBegin($event)"
-  (cellClick)="onCellClick($event)"
-></ejs-schedule>
-<div class="service-info" *ngIf="numberOfServices">
-  Broj usluga za taj dan: <span>{{ numberOfServices }}</span>
+<div class="row text-center">
+  <div class="col-md-4">
+    <div class="btn-group">
+      <div
+        class="btn btn-primary"
+        mwlCalendarPreviousView
+        [view]="view"
+        [(viewDate)]="viewDate"
+        (viewDateChange)="closeOpenMonthViewDay()"
+      >
+        Prethodni
+      </div>
+      <div
+        class="btn btn-outline-secondary"
+        mwlCalendarToday
+        [(viewDate)]="viewDate"
+      >
+        Danasnji
+      </div>
+      <div
+        class="btn btn-primary"
+        mwlCalendarNextView
+        [view]="view"
+        [(viewDate)]="viewDate"
+        (viewDateChange)="closeOpenMonthViewDay()"
+      >
+        Sledeci
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <h4>{{ viewDate | calendarDate : view + "ViewTitle" : "en" }}</h4>
+  </div>
+  <div class="col-md-4">
+    <div class="btn-group">
+      <div
+        class="btn btn-primary"
+        (click)="setView(CalendarView.Month)"
+        [class.active]="view === CalendarView.Month"
+      >
+        Mesec
+      </div>
+      <div
+        class="btn btn-primary"
+        (click)="setView(CalendarView.Week)"
+        [class.active]="view === CalendarView.Week"
+      >
+        Nedelja
+      </div>
+      <div
+        class="btn btn-primary"
+        (click)="setView(CalendarView.Day)"
+        [class.active]="view === CalendarView.Day"
+      >
+        Dan
+      </div>
+    </div>
+  </div>
 </div>
-<div class="service-info" *ngIf="overtimeHours">
-  Broj prekovremenih sati za datum: <span>{{ overtimeHours }}</span>
+<div [ngSwitch]="view">
+  <mwl-calendar-month-view
+    *ngSwitchCase="CalendarView.Month"
+    [viewDate]="viewDate"
+    [events]="events"
+    [refresh]="refresh"
+    [activeDayIsOpen]="activeDayIsOpen"
+    (dayClicked)="dayClicked($event.day)"
+    (eventClicked)="handleEvent('Clicked', $event.event)"
+    (eventTimesChanged)="eventTimesChanged($event)"
+  >
+  </mwl-calendar-month-view>
+  <mwl-calendar-week-view
+    *ngSwitchCase="CalendarView.Week"
+    [viewDate]="viewDate"
+    [events]="events"
+    [refresh]="refresh"
+    (eventClicked)="handleEvent('Clicked', $event.event)"
+    (eventTimesChanged)="eventTimesChanged($event)"
+  >
+  </mwl-calendar-week-view>
+  <mwl-calendar-day-view
+    *ngSwitchCase="CalendarView.Day"
+    [viewDate]="viewDate"
+    [events]="events"
+    [refresh]="refresh"
+    (eventClicked)="handleEvent('Clicked', $event.event)"
+    (eventTimesChanged)="eventTimesChanged($event)"
+  >
+  </mwl-calendar-day-view>
 </div>
+<label for="datePicker">Izaberi datum:</label>
+<input
+  type="date"
+  id="datePicker"
+  [(ngModel)]="selected"
+  (change)="onDateSelected()"
+/>
+
+<select
+  (change)="onSelectChange()"
+  id="department"
+  name="department"
+  [(ngModel)]="selectedEvent"
+  required
+>
+  <option *ngFor="let event of eventType" [value]="event">
+    {{ event }}
+  </option>
+</select>
+<div *ngIf="serviceOfferSelected">
+  <label for="numberOfServices">Broj usluga:</label>
+  <input type="number" id="numberOfServices" [(ngModel)]="numberOfServices" />
+</div>
+<div *ngIf="overtimeSelected">
+  <label for="overtimeHours">Broj prekovremenih sati:</label>
+  <input type="number" id="overtimeHours" [(ngModel)]="overtimeHours" />
+</div>
+<button class="btn btn-primary float-end" (click)="addEvent()">Dodaj</button>
+
+<ng-template #modalContent let-close="close">
+  <div class="modal-header">
+    <h5 class="modal-title">Da li zelite da obrisete dogadjaj {{modalData.event.title}}?</h5>
+    <button type="button" class="close" (click)="close()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="handleDelete(modalData.event)">
+      Obrisi
+    </button>
+  </div>
+</ng-template>
