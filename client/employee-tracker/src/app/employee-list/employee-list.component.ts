@@ -4,11 +4,13 @@ import { NgForm } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { EmployeeService } from 'src/services/employee.service';
 import { OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Store,select } from '@ngrx/store';
 import { selectEmployees } from '../store/selectors/employee.selector';
 import { getEmployees } from '../store/actions/employee.action';
 import { addEmployee } from '../store/actions/employee.action';
 import { EmployeeStateInterface } from '../models/employee.state';
+import { User } from '../models/user';
+import { selectUserFeature } from '../store/selectors/user.selectors';
 
 @Component({
   selector: 'app-employee-list',
@@ -23,7 +25,9 @@ export class EmployeeListComponent implements OnInit {
   searchTerm = '';
   filteredEmployees: any[] = [];
   employees$ = this.store.select(selectEmployees);
-
+  authenticated = true;
+  user!: User | null;
+  isLoggedIn!: boolean;
   searchEmployees() {
     this.filteredEmployees = this.employeesStore.filter((employee) => {
       const fullName = `${employee.firstName} ${employee.lastName}`;
@@ -32,6 +36,10 @@ export class EmployeeListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.store.pipe(select(selectUserFeature)).subscribe((userState) => {
+      this.isLoggedIn = userState.isLoggedIn;
+      this.authenticated = userState.isLoggedIn;
+    });
     this.store.dispatch(getEmployees());
     this.store.select(selectEmployees).subscribe((employees) => {
       this.employeesStore = employees;

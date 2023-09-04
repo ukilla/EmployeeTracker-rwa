@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
 import { User } from '../models/user';
 import { Store, select } from '@ngrx/store';
 import { UserStateInterface } from '../models/user.state';
