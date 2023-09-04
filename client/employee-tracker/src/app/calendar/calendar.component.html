@@ -110,11 +110,11 @@
       {{ event }}
     </option>
   </select>
-  <div *ngIf="serviceOfferSelected">
+  <div *ngIf="serviceOfferSelected" class="number-input">
     <label for="numberOfServices">Broj usluga:</label>
     <input type="number" id="numberOfServices" [(ngModel)]="numberOfServices" />
   </div>
-  <div *ngIf="overtimeSelected">
+  <div *ngIf="overtimeSelected" class="number-input">
     <label for="overtimeHours">Broj prekovremenih sati:</label>
     <input type="number" id="overtimeHours" [(ngModel)]="overtimeHours" />
   </div>

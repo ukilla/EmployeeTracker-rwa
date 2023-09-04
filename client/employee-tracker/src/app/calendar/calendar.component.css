@@ -62,6 +62,10 @@ button[igxButton]:hover {
   margin-right: 10px;
 }
 
-.button-container{
+.button-container {
   margin-bottom: 5px;
+}
+
+.number-input {
+  margin-top: 7px;
 }
