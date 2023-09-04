@@ -84,7 +84,6 @@ export class MainComponent {
     this.employeeService.getEmployees().subscribe(
       (data: any) => {
         this.employees = data;
-        console.log(data);
         this.calculateStatistics();
       },
       (error: any) => {

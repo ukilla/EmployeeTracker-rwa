@@ -3,10 +3,10 @@
   [class.active]="active"
   (click)="toggleEmployeesVisibility()"
 >
-  {{ department.name }}
+  {{ department!.name }}
 </div>
 <div *ngIf="employeesVisible" class="employee-list">
-  <div *ngFor="let employee of department.employees" class="employee-card">
+  <div *ngFor="let employee of employees" class="employee-card">
     <app-employee
       [employeeId]="employee.id"
       [firstName]="employee.firstName"

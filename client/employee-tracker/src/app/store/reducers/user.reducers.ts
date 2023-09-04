@@ -47,5 +47,6 @@ export const reducers = createReducer(
   on(UserActions.registerUserFailure, (state) => ({
     ...state,
     isLoading: false,
-  }))
+  })),
+  
 );

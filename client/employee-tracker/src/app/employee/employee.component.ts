@@ -6,7 +6,9 @@ import {
   ViewChild,
 } from '@angular/core';
 import { EmployeeService } from 'src/services/employee.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { Store } from '@ngrx/store';
+import { deleteEmployee } from '../store/actions/employee.action';
 
 @Component({
   selector: 'app-employee',
@@ -18,7 +20,8 @@ export class EmployeeComponent implements OnInit {
   modalContent!: TemplateRef<any>;
   constructor(
     private employeeService: EmployeeService,
-    private modal: NgbModal
+    private modal: NgbModal,
+    private store: Store
   ) {}
   @Input() employeeId: number = -1;
   @Input() firstName: string = '';
@@ -49,14 +52,7 @@ export class EmployeeComponent implements OnInit {
     this.modal.open(this.modalContent, { size: 'lg' });
   }
   deleteEmployee() {
-    this.employeeService.deleteEmployee(this.employeeId).subscribe(
-      (response) => {
-        console.log('API response:', response);
-      },
-      (error) => {
-        console.error('API error:', error);
-      }
-    );
+    this.store.dispatch(deleteEmployee({ employeeId: this.employeeId }));
     this.modal.dismissAll();
   }
 }

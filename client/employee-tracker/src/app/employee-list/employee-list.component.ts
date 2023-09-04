@@ -4,6 +4,11 @@ import { NgForm } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { EmployeeService } from 'src/services/employee.service';
 import { OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { selectEmployees } from '../store/selectors/employee.selector';
+import { getEmployees } from '../store/actions/employee.action';
+import { addEmployee } from '../store/actions/employee.action';
+import { EmployeeStateInterface } from '../models/employee.state';
 
 @Component({
   selector: 'app-employee-list',
@@ -14,22 +19,29 @@ export class EmployeeListComponent implements OnInit {
   showForm = false;
   departments: any[] = [];
   employee: any = {};
-  employees: any[] = [];
+  employeesStore: any[] = [];
   searchTerm = '';
   filteredEmployees: any[] = [];
+  employees$ = this.store.select(selectEmployees);
 
   searchEmployees() {
-    this.filteredEmployees = this.employees.filter((employee) => {
+    this.filteredEmployees = this.employeesStore.filter((employee) => {
       const fullName = `${employee.firstName} ${employee.lastName}`;
       return fullName.toLowerCase().includes(this.searchTerm.toLowerCase());
     });
   }
 
   ngOnInit() {
-    this.fetchEmployees();
+    this.store.dispatch(getEmployees());
+    this.store.select(selectEmployees).subscribe((employees) => {
+      this.employeesStore = employees;
+    });
   }
 
-  constructor(private employeeService: EmployeeService) {} 
+  constructor(
+    private employeeService: EmployeeService,
+    private store: Store<EmployeeStateInterface>
+  ) {}
 
   onSubmit(form: NgForm) {
     if (form.valid) {
@@ -40,22 +52,10 @@ export class EmployeeListComponent implements OnInit {
       );
 
       this.employee.departmentId = selectedDepartmentId;
-      this.employeeService
-        .addEmployee(
-          this.employee.firstName,
-          this.employee.lastName,
-          this.employee.departmentId
-        )
-        .subscribe(
-          (response: any) => {
-            console.log('Employee added successfully:', response);
-            form.resetForm();
-            this.showForm = false;
-          },
-          (error: any) => {
-            console.error('Error adding employee:', error);
-          }
-        );
+      this.employee.firstName = form.value.firstName;
+      this.employee.lastName = form.value.lastName;
+      this.store.dispatch(addEmployee({ employee: this.employee }));
+        form.resetForm();
     }
   }
 
@@ -73,17 +73,6 @@ export class EmployeeListComponent implements OnInit {
       },
       (error: any) => {
         console.error('Error fetching departments:', error);
-      }
-    );
-  }
-
-  fetchEmployees() {
-    this.employeeService.getEmployees().subscribe(
-      (data: any) => {
-        this.employees = data;
-      },
-      (error: any) => {
-        console.error('Error fetching employee:', error);
       }
     );
   }

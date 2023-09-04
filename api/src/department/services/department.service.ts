@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DepartmentEntity } from '../models/department.entity';
 import { Repository } from 'typeorm';
 import { EmployeeEntity } from 'src/employee/models/employee.entity';
+import { Employee } from 'src/employee/models/employee.class';
 
 @Injectable()
 export class DepartmentService {
@@ -26,6 +27,9 @@ export class DepartmentService {
   }
 
   async getDepartments() {
+    const departments = await this.departmentRepository.find();
+    for(let department of departments){
+    }
     return this.departmentRepository.find();
   }
 }

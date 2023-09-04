@@ -12,6 +12,7 @@ export class DepartmentTabComponent {
   @Input() department: any;
   active: boolean = false;
   employeesVisible: boolean = false;
+  employees:any;
 
   ngOnInit() {
     this.loadEmployees();
@@ -24,7 +25,7 @@ export class DepartmentTabComponent {
   loadEmployees() {
     this.employeeService.employeesFromDepartment(this.department.id).subscribe(
       (data: any) => {
-        this.department.employees = data;
+        this.employees = data;
       },
       (error: any) => {
         console.error('Error fetching employees:', error);

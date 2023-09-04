@@ -28,8 +28,8 @@ export class EmployeeService {
       }
     );
   }
-  getDepartments(): Observable<Department> {
-    return this.http.get<Department>(
+  getDepartments(): Observable<Department[]> {
+    return this.http.get<Department[]>(
       `${this.apiUrl}/department/getDepartments`,
       {
         withCredentials: true,

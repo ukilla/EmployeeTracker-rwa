@@ -28,6 +28,8 @@ import {
   parseISO,
 } from 'date-fns';
 import { Subject } from 'rxjs';
+import { Store } from '@ngrx/store';
+import * as EmployeeActions from '../store/actions/employee.action';
 
 @Component({
   selector: 'app-calendar',
@@ -69,7 +71,8 @@ export class CalendarComponent implements OnInit {
   constructor(
     private dateService: DateService,
     private cdr: ChangeDetectorRef,
-    private modal: NgbModal
+    private modal: NgbModal,
+    private store: Store
   ) {}
 
   dayClicked({ date, events }: { date: Date; events: CalendarEvent[] }): void {
@@ -144,19 +147,12 @@ export class CalendarComponent implements OnInit {
           },
         },
       ];
-      this.dateService
-        .addDutyDate(
-          this.employeeId,
-          this.parseDateStringToISO8601(this.selected)
-        )
-        .subscribe(
-          (response) => {
-            console.log('API response:', response);
-          },
-          (error) => {
-            console.error('API error:', error);
-          }
-        );
+      this.store.dispatch(
+        EmployeeActions.addDutyDate({
+          employeeId: this.employeeId,
+          date: this.parseDateStringToISO8601(this.selected),
+        })
+      );
     }
     if (this.selectedEvent == 'Slobodan dan') {
       this.events = [
@@ -173,19 +169,12 @@ export class CalendarComponent implements OnInit {
           },
         },
       ];
-      this.dateService
-        .addTakenLeave(
-          this.employeeId,
-          this.parseDateStringToISO8601(this.selected)
-        )
-        .subscribe(
-          (response) => {
-            console.log('API response:', response);
-          },
-          (error) => {
-            console.error('API error:', error);
-          }
-        );
+      this.store.dispatch(
+        EmployeeActions.addTakenLeave({
+          employeeId: this.employeeId,
+          date: this.parseDateStringToISO8601(this.selected),
+        })
+      );
     }
     if (this.selectedEvent == 'Godisnji odmor') {
       this.events = [
@@ -202,19 +191,12 @@ export class CalendarComponent implements OnInit {
           },
         },
       ];
-      this.dateService
-        .addVacationDate(
-          this.employeeId,
-          this.parseDateStringToISO8601(this.selected)
-        )
-        .subscribe(
-          (response) => {
-            console.log('API response:', response);
-          },
-          (error) => {
-            console.error('API error:', error);
-          }
-        );
+      this.store.dispatch(
+        EmployeeActions.addVacationDate({
+          employeeId: this.employeeId,
+          date: this.parseDateStringToISO8601(this.selected),
+        })
+      );
     }
     if (this.selectedEvent == 'Prekovremeni rad') {
       this.events = [
@@ -231,20 +213,13 @@ export class CalendarComponent implements OnInit {
           },
         },
       ];
-      this.dateService
-        .addOvertime(
-          this.employeeId,
-          this.parseDateStringToISO8601(this.selected),
-          this.overtimeHours
-        )
-        .subscribe(
-          (response) => {
-            console.log('API response:', response);
-          },
-          (error) => {
-            console.error('API error:', error);
-          }
-        );
+      this.store.dispatch(
+        EmployeeActions.addOvertime({
+          employeeId: this.employeeId,
+          date: this.parseDateStringToISO8601(this.selected),
+          overtimeHours: this.overtimeHours,
+        })
+      );
     }
     if (this.selectedEvent == 'Usluge') {
       this.events = [
@@ -261,20 +236,13 @@ export class CalendarComponent implements OnInit {
           },
         },
       ];
-      this.dateService
-        .addServiceOfferings(
-          this.employeeId,
-          this.parseDateStringToISO8601(this.selected),
-          this.numberOfServices
-        )
-        .subscribe(
-          (response) => {
-            console.log('API response:', response);
-          },
-          (error) => {
-            console.error('API error:', error);
-          }
-        );
+      this.store.dispatch(
+        EmployeeActions.addServiceOfferings({
+          employeeId: this.employeeId,
+          date: this.parseDateStringToISO8601(this.selected),
+          numberOfServiceOfferings: this.numberOfServices,
+        })
+      );
     }
   }
 
@@ -295,13 +263,8 @@ export class CalendarComponent implements OnInit {
         const startParsed = eventJson.start;
         return !(start == startParsed && eventJsonOut.title == eventJson.title);
       });
-      this.dateService.deleteOvertime(this.employeeId, start).subscribe(
-        (response) => {
-          console.log('API response:', response);
-        },
-        (error) => {
-          console.error('API error:', error);
-        }
+      this.store.dispatch(
+        EmployeeActions.deleteOvertime({ employeeId: this.employeeId, start })
       );
       this.modal.dismissAll();
     }
@@ -311,13 +274,11 @@ export class CalendarComponent implements OnInit {
         const startParsed = eventJson.start;
         return !(start == startParsed && eventJsonOut.title == eventJson.title);
       });
-      this.dateService.deleteVacationDate(this.employeeId, start).subscribe(
-        (response) => {
-          console.log('API response:', response);
-        },
-        (error) => {
-          console.error('API error:', error);
-        }
+      this.store.dispatch(
+        EmployeeActions.deleteVacationDate({
+          employeeId: this.employeeId,
+          start,
+        })
       );
       this.modal.dismissAll();
     }
@@ -327,13 +288,11 @@ export class CalendarComponent implements OnInit {
         const startParsed = eventJson.start;
         return !(start == startParsed && eventJsonOut.title == eventJson.title);
       });
-      this.dateService.deleteServiceOffering(this.employeeId, start).subscribe(
-        (response) => {
-          console.log('API response:', response);
-        },
-        (error) => {
-          console.error('API error:', error);
-        }
+      this.store.dispatch(
+        EmployeeActions.deleteServiceOffering({
+          employeeId: this.employeeId,
+          start,
+        })
       );
       this.modal.dismissAll();
     }
@@ -343,13 +302,11 @@ export class CalendarComponent implements OnInit {
         const startParsed = eventJson.start;
         return !(start == startParsed && eventJsonOut.title == eventJson.title);
       });
-      this.dateService.deleteDutyDate(this.employeeId, start).subscribe(
-        (response) => {
-          console.log('API response:', response);
-        },
-        (error) => {
-          console.error('API error:', error);
-        }
+      this.store.dispatch(
+        EmployeeActions.deleteDutyDate({
+          employeeId: this.employeeId,
+          start,
+        })
       );
       this.modal.dismissAll();
     }
@@ -359,13 +316,11 @@ export class CalendarComponent implements OnInit {
         const startParsed = eventJson.start;
         return !(start == startParsed && eventJsonOut.title == eventJson.title);
       });
-      this.dateService.deleteTakenLeaveDate(this.employeeId, start).subscribe(
-        (response) => {
-          console.log('API response:', response);
-        },
-        (error) => {
-          console.error('API error:', error);
-        }
+      this.store.dispatch(
+        EmployeeActions.deleteTakenLeave({
+          employeeId: this.employeeId,
+          start,
+        })
       );
       this.modal.dismissAll();
     }
