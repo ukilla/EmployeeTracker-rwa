@@ -39,6 +39,8 @@ import * as EmployeeActions from '../store/actions/employee.action';
 export class CalendarComponent implements OnInit {
   @ViewChild('modalContent', { static: true })
   modalContent!: TemplateRef<any>;
+  @ViewChild('modalContentForbidden', { static: true })
+  modalContentForbidden!: TemplateRef<any>;
   @Input() employeeId: number = -1;
   @Input() dutyDates: Date[] = [];
   @Input() vacationDates: Date[] = [];
@@ -132,6 +134,15 @@ export class CalendarComponent implements OnInit {
   }
 
   addEvent(): void {
+    const parsedDate = parseISO(this.selected);
+    const parsedDateObject = new Date(parsedDate);
+    const dateObjectNow = new Date();
+    const timeDifference = dateObjectNow.getTime() - parsedDateObject.getTime();
+    const daysDifference = timeDifference / (1000 * 3600 * 24);
+    if (daysDifference >= 32) {
+      this.modal.open(this.modalContentForbidden, { size: 'lg' });
+      return;
+    }
     if (this.selectedEvent == 'Dezurstvo') {
       this.events = [
         ...this.events,
@@ -257,6 +268,15 @@ export class CalendarComponent implements OnInit {
   handleDelete(event: any) {
     const eventJsonOut = JSON.parse(JSON.stringify(event));
     const { start } = eventJsonOut;
+    const parsedDate = parseISO(start);
+    const parsedDateObject = new Date(parsedDate);
+    const dateObjectNow = new Date();
+    const timeDifference = dateObjectNow.getTime() - parsedDateObject.getTime();
+    const daysDifference = timeDifference / (1000 * 3600 * 24);
+    if (daysDifference >= 32) {
+      this.modal.open(this.modalContentForbidden, { size: 'lg' });
+      return;
+    }
     if (event.title.toString().includes('Prekovremeni rad')) {
       this.events = this.events.filter((event) => {
         const eventJson = JSON.parse(JSON.stringify(event));

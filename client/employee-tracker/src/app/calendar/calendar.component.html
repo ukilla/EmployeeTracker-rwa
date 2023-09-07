@@ -139,3 +139,16 @@
     </button>
   </div>
 </ng-template>
+
+<ng-template #modalContentForbidden let-close="close">
+  <div class="modal-header">
+    <h5 class="modal-title">
+      Proslo je vise od 32 dana. Akcija je zakljucana!
+    </h5>
+    <button type="button" class="close" (click)="close()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-footer">
+  </div>
+</ng-template>
