@@ -15,6 +15,7 @@ export class HeaderComponent {
   authenticated = true;
   user!: User | null;
   isLoggedIn!: boolean;
+  isDropDown:boolean=false;
 
   constructor(
     private httpClient: HttpClient,
@@ -32,5 +33,9 @@ export class HeaderComponent {
   logout() {
     this.user = null;
     this.store.dispatch(AuthActions.logOutUser());
+  }
+
+  navBarCollapse(){
+    this.isDropDown=!this.isDropDown;
   }
 }

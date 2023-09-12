@@ -1,3 +1,17 @@
 .button-spacing {
     margin-right: 7px; 
   }
+
+  .mobile-nav.active {
+    display: block;
+  }
+
+  .mobile-nav {
+    display: none;
+    position: fixed;
+    top: 70px;
+    right: 10px;
+    background-color: #fff;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    width: 200px; 
+  }
