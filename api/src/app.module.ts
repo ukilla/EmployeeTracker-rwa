@@ -7,6 +7,8 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { EmployeeModule } from './employee/employee.module';
 import { DepartmentModule } from './department/department.module';
+import { LoggedGuard } from './guards/logged.guard';
+import { JwtModule } from '@nestjs/jwt';
 
 
 @Module({
@@ -20,14 +22,18 @@ import { DepartmentModule } from './department/department.module';
       password:process.env.POSTGRES_PASSWORD,
       database:process.env.POSTGRES_DATABASE,
       autoLoadEntities:true,
-      synchronize:true
+      synchronize:true,
     }),
     UserModule,
     AuthModule,
     EmployeeModule,
     DepartmentModule,
+    JwtModule.register({
+      secret:"secret",
+      signOptions: { expiresIn: '1d' },
+    })
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,LoggedGuard],
 })
 export class AppModule {}

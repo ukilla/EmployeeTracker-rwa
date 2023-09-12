@@ -52,7 +52,6 @@ export class LoginComponent {
         },
       })
     );
-
     this.isLoggedIn$.subscribe((isLoggedIn) => {
       if (isLoggedIn) {
         this.router.navigate(['/']);

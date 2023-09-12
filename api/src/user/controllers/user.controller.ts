@@ -22,6 +22,7 @@ export class UserController {
     private jwtService: JwtService,
   ) {}
 
+
   @Post("register")
   create(@Body() user: User): Promise<User> {
     return this.userService.createUser(user);
